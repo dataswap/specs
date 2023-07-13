@@ -1,6 +1,6 @@
 # 1. Introduction
 
-BigdataDAO 是一个基于区块链技术的去中心化开放数据交换平台，旨在汇聚全球各区域、各行业开放大数据集数据，实现人类有用数据的永久存储，并提供全面稳定的数据检索、下载、以及数据分析服务。
+BigdataDAO 是一个基于filecoin的layer2层区块链项目,是一个基于区块链技术的去中心化开放数据交换平台，旨在汇聚全球各区域、各行业开放大数据集数据，实现人类有用数据的永久存储，并提供全面稳定的数据检索、下载、以及数据分析服务。
 
 其主要特点包括:
 
@@ -30,9 +30,9 @@ BigdataDAO 利用区块链技术实现开放数据集的永久存储与去中心
 
 ### 1.1.2 Spec Status Overview
 |Section|State|Theory Audit|
-|:---:|:---:|:---:|
+|:---|:---:|:---:|
 |[1 Introduction](#1-introduction)|<font color="yellow">Draft/WIP</font>|
-|[1.2 Architecture Diagrams](#12-architecture-diagrams)|<font color="red">Missing</font>|
+|[1.2 Architecture Diagrams](#12-architecture-diagrams)|<font color="yellow">Draft/WIP</font>|
 |[1.3 Key Concepts](#13-key-concepts)|<font color="red">Missing</font>|
 
 ### 1.1.3 Implementations Status
@@ -41,4 +41,10 @@ BigdataDAO 利用区块链技术实现开放数据集的永久存储与去中心
 |:---:|:---:|:---:|:---:|:---:|
 
 ## 1.2 Architecture Diagrams
+
+![img](./img/architecture.png)
+
+### Data Lifecycle Diagram
+![img](./img/dataLifecycle.png)
+
 ## 1.3 Key Concepts
