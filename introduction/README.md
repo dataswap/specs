@@ -33,6 +33,8 @@ BigdataDAO 利用区块链技术实现开放数据集的永久存储与去中心
 |:---|:---:|:---:|
 |[1 Introduction](#1-introduction)|<font color="yellow">Draft/WIP</font>|
 |[1.2 Architecture Diagrams](#12-architecture-diagrams)|<font color="yellow">Draft/WIP</font>|
+|[1.2.1 Layered Architecture Diagram](#121-layered-architecture-diagram)|<font color="yellow">Draft/WIP</font>|
+|[1.2.2 Data Lifecycle Diagram](#122-data-lifecycle-diagram)|<font color="yellow">Draft/WIP</font>|
 |[1.3 Key Concepts](#13-key-concepts)|<font color="red">Missing</font>|
 
 ### 1.1.3 Implementations Status
@@ -42,9 +44,10 @@ BigdataDAO 利用区块链技术实现开放数据集的永久存储与去中心
 
 ## 1.2 Architecture Diagrams
 
+### 1.2.1 Layered Architecture Diagram
 ![img](./img/architecture.png)
 
-### Data Lifecycle Diagram
+### 1.2.2 Data Lifecycle Diagram
 ![img](./img/dataLifecycle.png)
 
 ## 1.3 Key Concepts
