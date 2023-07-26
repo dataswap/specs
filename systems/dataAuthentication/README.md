@@ -12,12 +12,13 @@ interface Role {
 }
 ```
 
-### 状态变量设计
+### 状态变量设
+
 #### 自定义数据结构
 
 ```
 // 定义数据集状态
-enum DatasetState { Submitted, ContentReview, ContentApproved, ProofSubmitted, ProofVerifing, Approved, Failed }
+enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
 
 // 定义数据集
 struct Dataset {

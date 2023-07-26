@@ -47,6 +47,10 @@
 #### 2.2.2.1 DataSet合约设计
 DataSet合约实现数据集信息注册、数据集状态变更、数据集查询、数据证明信息查询功能
 
+数据集被注册到合约开始在无须信任公证人合约中的评审的状态流转如下
+![img](./dataAuthentication/img/datasetMachine.png)
+
+
 详细内容见[DataSet合约设计](./dataAuthentication/README.md#dataset合约设计)
 
 #### 2.2.2.2 TrustlessNotary合约设计
