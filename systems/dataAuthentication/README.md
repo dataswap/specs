@@ -46,9 +46,11 @@ struct DatasetProof {
 
 // 定义发布信息
 struct PublishInfo {
-    uint256 numOfCopies;  // 副本数
+    uint32 numOfCopies;  // 副本数
+    // TODO: 一个供应商最多存储几份副本 
     string version;       // 版本号
     uint256 releaseDate;  // 发布日期
+    // TODO: 地域分布要求
 }
 ```
 
@@ -94,7 +96,7 @@ function updateState(address datasetAddress, uint256 newStatus) internal
 ```
 // 数据集提交接口，用于提交数据集证明
 //TODO：只允许TrustlessNotary合约调用
-function submitDatasetProof(
+function submitProof(
     address datasetAddress,
     bytes32 rootHash,
     bytes32[] memory leafHashes,
@@ -103,15 +105,7 @@ function submitDatasetProof(
 ) internal
 
 ```
-#### 数据集证明验证
-```
-// 数据集证明校验接口，用于验证数据集证明中的 rootHash 和 leafHashes 是否构成一颗 Merkle 树
-function verifyDatasetProof(DatasetProof memory datasetProof) internal view returns (bool) {
-    // 在此实现验证数据集证明的逻辑
-    // TODO:
-    // 返回 true 表示验证通过，返回 false 表示验证失败
-}
-```
+
 #### 获取数据集发布信息
 ```
 // 获取数据集的发布信息
@@ -123,14 +117,14 @@ function getPublishInfo(address datasetAddress) external view returns (PublishIn
 function isLeafHashInProof(address datasetAddress, bytes32 leafHash) external view returns (bool)
 ```
 
-
 ## TrustlessNotary合约设计
 ### 对外依赖
 依赖数据集合约
 
 ```
 interface IDataSet {
-    enum DatasetState { Submitted, ContentReview, ContentApproved, ProofSubmitted, ProofVerifing, Approved, Failed }
+    enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
+
     function registry(
         string memory title,
         string memory industry,
@@ -140,7 +134,9 @@ interface IDataSet {
         string memory accessInfo,
         bool noProofRequired,
         address owner,
-        uint256 size) external returns (address);
+        uint256 size
+    ) external returns (address);
+
     function updateState(address datasetAddress, uint256 newStatus) external;
     function submitProof(address datasetAddress,bytes32 rootHash,bytes32[] memory leafHashes,string memory leafAccessInfo,string memory metadataAccessInfo) external;
 }
@@ -149,10 +145,10 @@ interface IDataSet {
 ### 状态变量设计
 #### 自定义数据结构
 ```
-// 内容审核信息
-struct ContentReviewInfo {
+/ 内容审核信息
+struct ContentReviewStatus {
     bool approved;
-    uint128 approvalCount;
+    uint32 approvalCount;
     mapping(address => bool) approvals;
 }
 
@@ -170,8 +166,15 @@ struct DatasetVerificationInfo {
     bytes32[] merkleProof;      // Merkle 证明
     bytes32 proofRandomValue;   // 证明随机值
     mapping(bytes32 => bytes) sampleMapping;   // 采样点与源的映射关系信息
-    VerifyType   verifyType;    // 校验类型
+    VerifyType verifyType;    // 校验类型
     address submitter; //提交人
+}
+
+// 定义证明校验信息记录信息
+struct ProofVerificationStatus {
+    uint32 correctnessCount;       // 证明校验信息提交正确性计数
+    uint32 consistencyErrorCount;  // 一致性错误计数
+    uint32 metadataAccessCount;    // 元数据无法访问计数
 }
 ```
 
@@ -180,24 +183,38 @@ struct DatasetVerificationInfo {
 // DataSet合约地址
 address public dataSet;
 
+// Role 合约地址
+address public roleContract;
+
 // 内容审核状态映射
-mapping(address => ContentReviewInfo) public contentReview;
+mapping(address => ContentReviewStatus) public datasetContentReviews;
 
 // 为数据集增加证明提交人信息映射
 mapping(address => ProofInfo) public proofInfos;
 
-// 为数据集增加 校验信息
+// 为数据集增加 Merkle 证明信息映射
 mapping(address => DatasetVerificationInfo ) public datasetVerificationInfo;
 
+// 证明校验提交状态映射
+mapping(address => ProofVerificationStatus ) public datasetProofVerifications;
+
 // 审批门限值
-uint256 public contentThreshold;
+uint32 public contentThreshold;
 
 // 数据集审批人数，默认为5人，可变更
-uint256 public contentApproversCount = 5;
+uint32 public contentApproversCount = 5;
 
-// Role 合约地址
-address public roleContract;
+// 证明校验信息提交正确性阈值
+uint32 correctnessThreshold;       
 
+// 一致性错误阈值
+uint32 consistencyErrorThreshold;  
+
+// 元数据无法访问阈值
+uint32 metadataAccessThreshold;    
+
+// 数据集证明校验提交人数，默认为20人，可变更
+uint32 public verificationSubmittersCount = 20;
 ```
 ### 函数接口设计
 
@@ -232,7 +249,7 @@ modifier onlyContentApprovers(address datasetAddress) {
 }
 
 // 定义数据集审批事件
-    event DatasetApproved(address indexed datasetAddress, address indexed approver);
+event DatasetContentApproved(address indexed datasetAddress, address indexed approver);
 
 // 提交内容审批通过
 function approveContent(address datasetAddress) external onlyContentApprovers(datasetAddress)
@@ -254,6 +271,16 @@ function submitDatasetProof(
     string memory leafAccessInfo,
     string memory metadataAccessInfo
 ) external
+```
+
+#### 数据集证明验证
+```
+// 数据集证明校验接口，用于验证数据集证明中的 rootHash 和 leafHashes 是否构成一颗 Merkle 树
+function verifyDatasetProof(DatasetProof memory datasetProof) private pure returns (bool) {
+    // 在此实现验证数据集证明的逻辑
+    // TODO:
+    // 返回 true 表示验证通过，返回 false 表示验证失败
+}
 ```
 
 #### 校验信息提交
@@ -290,13 +317,33 @@ function verifyMerkleProof(
 #### 基本参数配置函数
 ```
 // 设置数据集审批人数
-function setContentApproversCount(uint256 _count) external onlyOwner {
+function setContentApproversCount(uint32 _count) external onlyOwner {
     contentApproversCount = _count;
 }
 
 // 设置审批门限值
-function setContentThreshold(uint256 _threshold) external onlyOwner {
+function setContentThreshold(uint32 _threshold) external onlyOwner {
     contentThreshold = _threshold;
+}
+
+// 设置证明校验信息提交正确性阈值
+function setCorrectnessThreshold(uint32 threshold) external onlyOwner {
+    correctnessThreshold = threshold;
+}
+
+// 设置一致性错误阈值
+function setConsistencyErrorThreshold(uint32 threshold) external onlyOwner {
+    consistencyErrorThreshold = threshold;
+}
+
+// 设置元数据无法访问阈值
+function setMetadataAccessThreshold(uint32 threshold) external onlyOwner {
+    metadataAccessThreshold = threshold;
+}
+
+// 设置数据集证明校验提交人数
+function setVerificationSubmittersCount(uint32 count) external onlyOwner {
+    verificationSubmittersCount = count;
 }
 
 ```

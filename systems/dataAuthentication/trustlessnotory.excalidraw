@@ -446,8 +446,8 @@
     },
     {
       "type": "rectangle",
-      "version": 700,
-      "versionNonce": 1438930753,
+      "version": 701,
+      "versionNonce": 254888464,
       "isDeleted": false,
       "id": "-0ihIc7AKlSFBLyfo1lkf",
       "fillStyle": "hachure",
@@ -457,7 +457,7 @@
       "opacity": 100,
       "angle": 0,
       "x": -192.44741821289062,
-      "y": 56.874786376953125,
+      "y": 56.666473388671875,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
       "width": 278.1064147949219,
@@ -468,7 +468,7 @@
         "type": 3
       },
       "boundElements": [],
-      "updated": 1690285622092,
+      "updated": 1690364798472,
       "link": null,
       "locked": false
     },
