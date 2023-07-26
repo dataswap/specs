@@ -51,12 +51,12 @@ DataSet合约实现数据集信息注册、数据集状态变更、数据集查�
 ![img](./dataAuthentication/img/datasetMachine.png)
 
 
-详细内容见[DataSet合约设计](./dataAuthentication/README.md#dataset合约设计)
+详细内容见[DataSet合约设计](./dataAuthentication/README.md#21-dataset合约设计)
 
 #### 2.2.2.2 TrustlessNotary合约设计
 TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证明提交及校验、数据集证明验证信息提交及校验
 
-详细内容见[TrustlessNotary合约设计](./dataAuthentication/README.md#trustlessnotary合约设计)
+详细内容见[TrustlessNotary合约设计](./dataAuthentication/README.md#22-trustlessnotary合约设计)
 
 ### 2.2.3 数据集证明工具集
 

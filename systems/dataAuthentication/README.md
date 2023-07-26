@@ -1,7 +1,11 @@
-# 无须信任公证人合约设计
+# 无须信任公证人设计
 
-## DataSet合约设计
-### 对外依赖
+## 1 数据集一致性算法
+
+## 2 无须信任公证人合约设计
+
+### 2.1 DataSet合约设计
+#### 2.1.1 对外依赖
 依赖Role合约，获取数据集审批人列表
 ```
 interface Role {
@@ -12,9 +16,9 @@ interface Role {
 }
 ```
 
-### 状态变量设
+#### 2.1.2 状态变量设计
 
-#### 自定义数据结构
+##### 2.1.2.1 自定义数据结构
 
 ```
 // 定义数据集状态
@@ -54,7 +58,7 @@ struct PublishInfo {
 }
 ```
 
-### 状态变量
+##### 2.1.2.2 状态变量
 
 ```
 mapping(address => Dataset) public datasets;
@@ -63,8 +67,8 @@ mapping(address => DatasetProof) public datasetProofs;
 mapping(address => PublishInfo) public datasetPublishInfos;
 ```
 
-### 函数接口设计
-#### 数据集注册
+#### 2.1.3 函数接口设计
+##### 2.1.3.1 数据集注册
 ```
 // 提交数据集注册请求，记录数据集状态为Submitted，生成 datasetAddress 并返回
 function registry(
@@ -79,7 +83,7 @@ function registry(
     uint256 size) internal returns (address)
 ```
 
-#### 数据集状态更新
+##### 2.1.3.2 数据集状态更新
 //数据集提交随着无须信任公证人合约处理状态不断变更
 
 ```
@@ -91,7 +95,7 @@ event DatasetStatusChanged(address indexed datasetAddress, uint256 newStatus);
 function updateState(address datasetAddress, uint256 newStatus) internal
 ```
 
-#### 数据集证明提交
+##### 2.1.3.3 数据集证明提交
 
 ```
 // 数据集提交接口，用于提交数据集证明
@@ -106,19 +110,19 @@ function submitProof(
 
 ```
 
-#### 获取数据集发布信息
+##### 2.1.3.4 获取数据集发布信息
 ```
 // 获取数据集的发布信息
 function getPublishInfo(address datasetAddress) external view returns (PublishInfo memory) 
 ```
-#### 判断piece hash是否存在于数据集中
+##### 2.1.3.5 判断piece hash是否存在于数据集中
 ```
 // 判断数据集的数据证明的 leafHashes 是否包含指定的哈希值
 function isLeafHashInProof(address datasetAddress, bytes32 leafHash) external view returns (bool)
 ```
 
-## TrustlessNotary合约设计
-### 对外依赖
+### 2.2 TrustlessNotary合约设计
+#### 2.2.1 对外依赖
 依赖数据集合约
 
 ```
@@ -142,8 +146,8 @@ interface IDataSet {
 }
 ```
 
-### 状态变量设计
-#### 自定义数据结构
+#### 2.2.2 状态变量设计
+##### 2.2.2.1 自定义数据结构
 ```
 / 内容审核信息
 struct ContentReviewStatus {
@@ -178,7 +182,7 @@ struct ProofVerificationStatus {
 }
 ```
 
-#### 状态变量
+##### 2.2.2.2 状态变量
 ```
 // DataSet合约地址
 address public dataSet;
@@ -216,9 +220,9 @@ uint32 metadataAccessThreshold;
 // 数据集证明校验提交人数，默认为20人，可变更
 uint32 public verificationSubmittersCount = 20;
 ```
-### 函数接口设计
+#### 2.2.3 函数接口设计
 
-#### 数据注册请求
+##### 2.2.3.1 数据注册请求
 向数据集合约注册数据集，获取数据集地址，本地初始化该数据集的内容审批信息，从Role合约获取审批人信息
 > TODO：审核人超时未处理更新审核人逻辑
 
@@ -238,7 +242,7 @@ function registryDataset(
 ) external returns (address)
 ```
 
-#### 内容审批提交
+##### 2.2.3.2 内容审批提交
 //内容开始审批变更数据集状态为ContentReview，审批人数达到审批门限则数据集状态变更为ContentApproved
 ```
 // 修饰器：验证是否是数据集的审批人
@@ -254,7 +258,7 @@ event DatasetContentApproved(address indexed datasetAddress, address indexed app
 // 提交内容审批通过
 function approveContent(address datasetAddress) external onlyContentApprovers(datasetAddress)
 ```
-#### 数据集证明提交
+##### 2.2.3.3 数据集证明提交
 ```
 // 修饰器：验证是否是数据集证明的提交人
 modifier onlyProofSubmitter(address datasetAddress) {
@@ -273,7 +277,7 @@ function submitDatasetProof(
 ) external
 ```
 
-#### 数据集证明验证
+##### 2.2.3.4 数据集证明验证
 ```
 // 数据集证明校验接口，用于验证数据集证明中的 rootHash 和 leafHashes 是否构成一颗 Merkle 树
 function verifyDatasetProof(DatasetProof memory datasetProof) private pure returns (bool) {
@@ -283,7 +287,7 @@ function verifyDatasetProof(DatasetProof memory datasetProof) private pure retur
 }
 ```
 
-#### 校验信息提交
+##### 2.2.3.5 校验信息提交
 数据集证明提交后允许提交三种类型的校验信息：
 正确性证明:Correctness
 一致性争议:DataConsistencyDispute
@@ -302,7 +306,7 @@ function submitDatasetVerificationInfo(
 //TODO：
 校验通过策略：正确性通过制定门限，争议低于指定门限则判定为成功，可发布数据集，否则判定为失败
 
-#### merkle证明校验 
+##### 2.2.3.6 merkle证明校验 
 
 ```
 // 私有函数来进行Merkle树的验证
@@ -314,7 +318,7 @@ function verifyMerkleProof(
 ) private pure returns (bool)
 ```
 
-#### 基本参数配置函数
+##### 2.2.3.7 基本参数配置函数
 ```
 // 设置数据集审批人数
 function setContentApproversCount(uint32 _count) external onlyOwner {
@@ -347,3 +351,5 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 }
 
 ```
+
+## 3 数据集证明工具集
