@@ -67,9 +67,38 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 
 ### 2.3.1 Storage Deal
 
+存储交易是web2网络存储数据转入到web3网络存储的数据入口点，完成Fulldata Provider在链上发布、和Storage Provider协商、完成校验存储交易功能。
+
+具体包括以下功能：
+
+- 数据撮合拍卖功能，支持大数据集拆分子订单拍卖。
+- 存储交易管理功能。
+- datacap管理功能。
+- 数据集管理功能。
+
+[详细功能介绍](./dataDeals/README.md#Storage_Deal)
+
 ### 2.3.2 Retrieve Deal
 
+检索交易提供web3存储数据检索业务，Retrieve Client查找到所需要数据集，通过检索交易获取所需要的数据集。
+
+具体包括以下功能：
+
+- 数据集检索功能
+- 数据集下载交易功能
+
+[详细功能介绍](./dataDeals/README.md#Retrieve_Deal)
+
 ### 2.3.3 Compute Deal
+
+计算交易提供计算功能，Compute Client发布计算任务单，通过计算交易获取所需要的计算结果。
+
+具体包括以下功能：
+
+- 计算撮合功能。
+- 计算交易管理功能。
+
+[详细功能介绍](./dataDeals/README.md#Compute_Deal)
 
 ## 2.4 Reputation
 - SP 声誉
