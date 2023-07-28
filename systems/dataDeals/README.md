@@ -6,7 +6,7 @@
 
 数据交易公共接口约束数据交易基本操作，供各交易类型继承使用，以下为其接口及属性相关定义。
 
-### IDataTransaction接口
+### IDataTransaction方法
 
 - 创建交易。
 - 取消交易。
@@ -17,7 +17,7 @@
 
 数据交易币质押支付相关功能由Supervision合约实现，以下为其接口及属性相关定义。
 
-#### Supervision接口
+#### Supervision方法
 
 - 质押（pledge）
 - 付款（successfulTransactionPaid）
@@ -37,7 +37,7 @@ uint256 public totalPledgeAmount;
 
 ### BigData合约
 
-#### BigData功能接口
+#### BigData功能方法
 
 - 创建
 - 更新
@@ -79,7 +79,7 @@ enum DataStatus { Valid, Invalid }
 
 ### Replica合约
 
-#### Replica接口
+#### Replica方法
 
 - 更新存储：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
 - 续期：完成续期后，更新副本有效期。
@@ -121,7 +121,7 @@ struct Replica {
 
 ### Auction合约
 
-#### Auction功能接口
+#### Auction功能方法
 
 - 创建拍卖（createAuction），根据数据属性创建智能合约拍卖单，拍卖单状态为投标中。
 - 取消拍卖（cancelAuction），取消指定拍卖单，退款等清理操作完成后，状态置为取消。
@@ -169,7 +169,7 @@ struct AuctionItem {
 }
 ```
 
-#### Bid功能接口
+#### Bid功能方法
 
 - 出价（placeBid），在拍卖单投标周期内，调用出价接口出价竞拍，状态置为投标中。
 - 中标（selected），出价代币质押到监管合约，状态置为已选择。
@@ -207,12 +207,12 @@ enum BidStatus {
 
 ### datacap合约（库）
 
-#### datacap接口  
+#### datacap方法  
 
 - 查询：datacap相关信息查询。
 - 签发授权：指定拍卖单datacap分配。
 - 取消授权：取消指定拍卖单datacap分配。
-- 冻结授权：冻结指定拍卖单datacap使用。
+- 冻结授权：冻结指定拍卖单datacap使用。预留接口，官方暂时不支持冻结操作。
 
 #### datacap属性
 
@@ -226,7 +226,7 @@ struct DataCapInfo {
 
 ### StorageTransaction合约
 
-#### StorageTransaction接口  
+#### StorageTransaction方法  
 
 - 创建交易：创建存储交易。
 - 取消交易：取消交易。
@@ -277,7 +277,7 @@ event Pledged(address indexed payer, uint256 id);
 event ProgressSubmitted(uint256 indexed id, string signatureProof);
 ```
 
-#### RetrieveTransaction接口
+#### RetrieveTransaction方法
 
 - 创建交易：检索支付代币质押到监管合约，分配检索密钥。
 - 取消交易：取消交易。
@@ -324,7 +324,7 @@ event Pledged(address indexed payer, uint256 id);
 event ProgressSubmitted(uint256 indexed id, string signatureProof);
 ```
 
-#### 计算交易接口
+#### 计算交易方法
 
 - 创建交易：计算支付代币质押到监管合约。
 - 接受交易：Compute Provider接受计算任务。
