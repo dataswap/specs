@@ -9,10 +9,9 @@
 依赖Role合约，获取数据集审批人列表
 ```
 interface Role {
-    //获取数据集内容审核人
-    function getContentApprovers(address datasetAddress, address[] memory excludedApprovers, uint256 count) external view returns (address[] memory);
-    //获取证明提交人，提交人申请和分配逻辑在Role中实现
-    function getProofSubmitters(address datasetAddress) external view returns (address);
+    // 获取数据集内容审核人
+    // 获取证明提交人，提交人申请和分配逻辑在Role中实现
+    function applyDatasetTask(address datasetAddress, address[] memory excludedApprovers, uint256 count,bytes32 _role) external view returns (address[] memory)
 }
 ```
 
