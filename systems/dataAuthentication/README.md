@@ -256,6 +256,10 @@ event DatasetContentApproved(address indexed datasetAddress, address indexed app
 
 // 提交内容审批通过
 function approveContent(address datasetAddress) external onlyContentApprovers(datasetAddress)
+
+// TODO: 被分配的审批成员必须在指定交易时间内提交审批
+// 超时不提交审批，数据集提交人可以出发更换审批人
+
 ```
 ##### 2.2.3.3 数据集证明提交
 ```
@@ -275,6 +279,9 @@ function submitDatasetProof(
     string memory metadataAccessInfo
 ) external
 ```
+
+// TODO: 被分配的证明提交人必须在指定交易时间内提交证明
+// 超时不提交数据集证明，数据集提交人可以出发更换证明人
 
 ##### 2.2.3.4 数据集证明验证
 ```
@@ -302,8 +309,7 @@ function submitDatasetVerificationInfo(
     VerifyType verifyType
 ) external
 ```
-//TODO：
-校验通过策略：正确性通过制定门限，争议低于指定门限则判定为成功，可发布数据集，否则判定为失败
+//TODO：校验通过策略：正确性通过制定门限，争议低于指定门限则判定为成功，可发布数据集，否则判定为失败
 
 ##### 2.2.3.6 merkle证明校验 
 

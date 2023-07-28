@@ -37,7 +37,9 @@
 - 将datacap和公证人签名解耦，从而避免作恶行为；
 
 //TODU:文档详细说明
+
 数据一致性校验算法基本原理如下图所示:
+
 ![数据一致性校验算法原理图](./dataAuthentication/img/datasetConsistencyAlgorithm.png)
 
 ### 2.2.2 合约设计
