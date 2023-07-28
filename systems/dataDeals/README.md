@@ -230,7 +230,7 @@ struct DataCapInfo {
 
 - 创建交易：创建存储交易。
 - 取消交易：取消交易。
-- 证明校验：SP 周期性将已完成存储扇区信息提交。完成datacap与扇区CID有效性校验，存储时长校验。
+- 证明校验：SP 周期性将已完成存储扇区proof信息提交。证明校验完成datacap与扇区CID有效性校验，存储时长校验。
 - 完成交易：存储交易数据被添加到SP可以证明数据存储的扇区中并完成校验。
 
 #### StorageTransaction属性  
@@ -281,7 +281,7 @@ event ProgressSubmitted(uint256 indexed id, string signatureProof);
 
 - 创建交易：检索支付代币质押到监管合约，分配检索密钥。
 - 取消交易：取消交易。
-- 证明校验：确认已传输完成扇区后，触发自动分段支付。
+- 证明校验：RP 周期性将已传输完成扇区proof信息提交，证明校验完成签名校验与扇区CID有效性校验，触发自动分段支付。
 - 完成交易：确认所有交易证明已经校验完成。
 
 #### RetrieveTransaction属性
@@ -328,7 +328,7 @@ event ProgressSubmitted(uint256 indexed id, string signatureProof);
 
 - 创建交易：计算支付代币质押到监管合约。
 - 接受交易：Compute Provider接受计算任务。
-- 证明校验：校验证明信息是否正确。
+- 证明校验：校验证明信息是否正确。不同计算交易校验证明算法不同，以car生成计算为例，使用数据一致性算法验证其正确性。
 - 完成交易：完成所有证明校验。
 - 取消交易：取消交易。
 
