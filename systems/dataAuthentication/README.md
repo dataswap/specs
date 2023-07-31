@@ -25,7 +25,7 @@
 interface Role {
     // 获取数据集内容审核人
     // 获取证明提交人，提交人申请和分配逻辑在Role中实现
-    function applyDatasetTask(address datasetAddress, address[] memory excludedApprovers, uint256 count,bytes32 _role) external view returns (address[] memory)
+    function applyDatasetTask(uint256 datasetID, address[] memory excludedApprovers, uint256 count,bytes32 _role) external view returns (address[] memory)
 }
 ```
 
@@ -35,7 +35,7 @@ interface Role {
 
 ```
 // 定义数据集状态
-enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
+enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitting,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
 
 // 定义数据集
 struct Dataset {
@@ -74,16 +74,18 @@ struct PublishInfo {
 ##### 2.1.2.2 状态变量
 
 ```
-mapping(address => Dataset) public datasets;
-mapping(address => DatasetState) private datasetStatus;
-mapping(address => DatasetProof) public datasetProofs;
-mapping(address => PublishInfo) public datasetPublishInfos;
+uint256 public datasetCounter; // 计数器，用于生成递增的数据集ID
+mapping(uint256 => Dataset) public datasets;
+mapping(uint256 => DatasetState) private datasetStatus;
+mapping(uint256 => DatasetProof) public datasetProofs;
+mapping(uint256 => PublishInfo) public datasetPublishInfos;
+
 ```
 
 #### 2.1.3 函数接口设计
 ##### 2.1.3.1 数据集注册
 ```
-// 提交数据集注册请求，记录数据集状态为Submitted，生成 datasetAddress 并返回
+// 提交数据集注册请求，记录数据集状态为Submitted，生成 datasetID 并返回
 function registry(
     string memory title,
     string memory industry,
@@ -93,7 +95,7 @@ function registry(
     string memory accessInfo,
     bool noProofRequired,
     address owner,
-    uint256 size) internal returns (address)
+    uint256 size) internal returns (uint256)
 ```
 
 ##### 2.1.3.2 数据集状态更新
@@ -101,11 +103,14 @@ function registry(
 
 ```
 // 数据集状态变更事件
-event DatasetStatusChanged(address indexed datasetAddress, uint256 newStatus);
+event DatasetStatusChanged(uint256 indexed datasetID, uint256 newStatus);
 
 // 改变数据集状态，只允许内部调用
-//TODO：只允许TrustlessNotary合约调用
-function updateState(address datasetAddress, uint256 newStatus) internal
+function updateState(uint256 datasetID, uint256 newStatus) internal {
+    require(newStatus < uint256(DatasetState.Rejected), "Invalid status"); // 确保状态值有效
+    datasetStatus[datasetID] = DatasetState(newStatus);
+    emit DatasetStatusChanged(datasetID, newStatus);
+}
 ```
 
 ##### 2.1.3.3 数据集证明提交
@@ -114,24 +119,23 @@ function updateState(address datasetAddress, uint256 newStatus) internal
 // 数据集提交接口，用于提交数据集证明
 //TODO：只允许TrustlessNotary合约调用
 function submitProof(
-    address datasetAddress,
+    uint256 datasetID,
     bytes32 rootHash,
     bytes32[] memory leafHashes,
     string memory leafAccessInfo,
     string memory metadataAccessInfo
-) internal
-
+) external
 ```
 
 ##### 2.1.3.4 获取数据集发布信息
 ```
 // 获取数据集的发布信息
-function getPublishInfo(address datasetAddress) external view returns (PublishInfo memory) 
+function getPublishInfo(uint256 datasetID) external view returns (PublishInfo memory)
 ```
 ##### 2.1.3.5 判断piece hash是否存在于数据集中
 ```
 // 判断数据集的数据证明的 leafHashes 是否包含指定的哈希值
-function isLeafHashInProof(address datasetAddress, bytes32 leafHash) external view returns (bool)
+function isLeafHashInProof(uint256 datasetID, bytes32 leafHash) external view returns (bool)
 ```
 
 ### 2.2 TrustlessNotary合约设计
@@ -140,7 +144,7 @@ function isLeafHashInProof(address datasetAddress, bytes32 leafHash) external vi
 
 ```
 interface IDataSet {
-    enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
+    enum DatasetState {Submitted,ContentReview,ContentApproved,ProofSubmitting,ProofSubmitted,ProofSubmissionFailed,ProofVerifying,ProofVerificationDispute,Approved,Rejected}
 
     function registry(
         string memory title,
@@ -152,10 +156,10 @@ interface IDataSet {
         bool noProofRequired,
         address owner,
         uint256 size
-    ) external returns (address);
+    ) external returns (uint256);
 
-    function updateState(address datasetAddress, uint256 newStatus) external;
-    function submitProof(address datasetAddress,bytes32 rootHash,bytes32[] memory leafHashes,string memory leafAccessInfo,string memory metadataAccessInfo) external;
+    function updateState(uint256 datasetID,uint256 newStatus) internal;
+    function submitProof(uint256 datasetID,bytes32 rootHash,bytes32[] memory leafHashes,string memory leafAccessInfo,string memory metadataAccessInfo) external;
 }
 ```
 
@@ -180,8 +184,8 @@ enum VerifyType { Correctness, DataConsistencyDispute, MetadataInaccessibilityDi
 
 // 定义数据集校验信息结构
 struct DatasetVerificationInfo {
+    uint64 proofRandomHeight;   // 证明随机值获取高度
     bytes32[] merkleProof;      // Merkle 证明
-    bytes32 proofRandomValue;   // 证明随机值
     mapping(bytes32 => bytes) sampleMapping;   // 采样点与源的映射关系信息
     VerifyType verifyType;    // 校验类型
     address submitter; //提交人
@@ -202,7 +206,7 @@ address public dataSet;
 
 // Role 合约地址
 address public roleContract;
-
+type ID address
 // 内容审核状态映射
 mapping(address => ContentReviewStatus) public datasetContentReviews;
 
@@ -241,7 +245,7 @@ uint32 public verificationSubmittersCount = 20;
 
 ```
 // 数据集注册事件
-event DatasetRegistered(address indexed datasetAddress, address indexed owner);
+event DatasetRegistered(uint256 indexed datasetID, address indexed owner);
 
 // 调用DataSet合约的注册函数
 function registryDataset(
@@ -251,26 +255,26 @@ function registryDataset(
     string memory description,
     string memory source,
     string memory accessInfo, // 新增的字段：描述源数据如何访问
-    bool noProofRequired
-) external returns (address)
+    bool noProofRequired,
+    uint256 size  // 新增数据集大小字段
+) external returns (uint256)
 ```
 
 ##### 2.2.3.2 内容审批提交
 //内容开始审批变更数据集状态为ContentReview，审批人数达到审批门限则数据集状态变更为ContentApproved
 ```
-// 修饰器：验证是否是数据集的审批人
-modifier onlyContentApprovers(address datasetAddress) {
-    ContentReviewInfo storage reviewInfo = contentReview[datasetAddress];
-    require(reviewInfo.approvals[msg.sender], "Only approvers can perform this action");
-    _;
-}
+ // 修饰器：验证是否是数据集的审批人
+ modifier onlyContentApprovers(uint256 datasetID) {
+     ContentReviewStatus storage reviewInfo = datasetContentReviews[datasetID];
+     require(reviewInfo.approvals[msg.sender], "Only approvers can perform this action");
+     _;
+ }
 
-// 定义数据集审批事件
-event DatasetContentApproved(address indexed datasetAddress, address indexed approver);
+ // 定义数据集审批事件
+ event DatasetContentApproved(uint256 indexed datasetID, address indexed approver);
 
-// 提交内容审批通过
-function approveContent(address datasetAddress) external onlyContentApprovers(datasetAddress)
-
+ // 提交内容审批通过
+ function approveContent(uint256 datasetID) external onlyContentApprovers(datasetID)
 // TODO: 被分配的审批成员必须在指定交易时间内提交审批
 // 超时不提交审批，数据集提交人可以出发更换审批人
 
@@ -278,15 +282,15 @@ function approveContent(address datasetAddress) external onlyContentApprovers(da
 ##### 2.2.3.3 数据集证明提交
 ```
 // 修饰器：验证是否是数据集证明的提交人
-modifier onlyProofSubmitter(address datasetAddress) {
-    ProofInfo storage proofInfo = proofInfos[datasetAddress];
+modifier onlyProofSubmitter(uint256 datasetID) {
+    ProofInfo storage proofInfo = proofInfos[datasetID];
     require(proofInfo.submitter == msg.sender, "Only proof submitter can perform this action");
     _;
 }
 
 // 增加证明提交接口，只能由证明提交人调用
 function submitDatasetProof(
-    address datasetAddress,
+    uint256 datasetID,
     bytes32 rootHash,
     bytes32[] memory leafHashes,
     string memory leafAccessInfo,
@@ -299,10 +303,10 @@ function submitDatasetProof(
 
 ##### 2.2.3.4 数据集证明验证
 ```
-// 数据集证明校验接口，用于验证数据集证明中的 rootHash 和 leafHashes 是否构成一颗 Merkle 树
-function verifyDatasetProof(DatasetProof memory datasetProof) private pure returns (bool) {
+// 数据集证明校验接口，用于验证数据集证明中的 rootHash 和 leafHashes 是否构成一棵 Merkle 树
+function verifyDatasetProof(bytes32 rootHash, bytes32[] memory leafHashes) private pure returns (bool) {
     // 在此实现验证数据集证明的逻辑
-    // TODO:
+    // TODO:实现细节，您可以根据实际需求编写验证逻辑
     // 返回 true 表示验证通过，返回 false 表示验证失败
 }
 ```
@@ -315,9 +319,9 @@ function verifyDatasetProof(DatasetProof memory datasetProof) private pure retur
 ```
 // 新增数据集校验信息提交接口，只能由证明提交人调用
 function submitDatasetVerificationInfo(
-    address datasetAddress,
+    uint256 datasetID,
     bytes32[] memory merkleProof,
-    bytes32 proofRandomValue,
+    uint64 proofRandomHeight,
     bytes32[] memory samplePoints,
     bytes[] memory sampleData,
     VerifyType verifyType
@@ -328,13 +332,17 @@ function submitDatasetVerificationInfo(
 ##### 2.2.3.6 merkle证明校验 
 
 ```
-// 私有函数来进行Merkle树的验证
+// 新增一个私有函数来进行Merkle树的验证
 function verifyMerkleProof(
     bytes32[] memory merkleProof,
     bytes32 rootHash,
     bytes32 leafHash,
-    bytes32 proofRandomValue
-) private pure returns (bool)
+    uint64 proofRandomHeight
+) private pure returns (bool) {
+    // 在此实现验证Merkle树的逻辑
+    // TODO:实现细节，您可以根据实际需求编写验证逻辑
+    // 返回 true 表示验证通过，返回 false 表示验证失败
+}
 ```
 
 ##### 2.2.3.7 基本参数配置函数
