@@ -31,13 +31,17 @@ contract BigDataDaoRole is AccessControl
     struct Member {
         address addr;
         PermissionLevel permissionLevel; //权限等级
-        string nickname; // 昵称
-        string country; // 国家
-        string city; // 城市
-        string organization; // 单位
-        string email; //EMAIL
+        string countrykey; // 国家
+        string citykey; // 城市
+        string organizationkey; // 单位
         bool kycCompleted; // 是否已经完成KYC
         bool kybCompleted; // 是否已经完成KYB
+    }
+
+    // 成员任务状态
+    struct MemberWork{
+        bytes32 role;
+        bool status;
     }
 
 ```
@@ -47,7 +51,7 @@ contract BigDataDaoRole is AccessControl
     mapping(address => Member) public members;
 
     // 数据集任务信息表
-    mapping(address => mapping(address=> bool)) taskrecords;
+    mapping(uint256 => mapping(address=> MemberWork[])) taskrecords;
 ```
 
 ## 3 函数接口设计
@@ -67,14 +71,13 @@ contract BigDataDaoRole is AccessControl
 ```
     // 成员注册
     function registerMember(
-        string memory _nickname,
         string memory _country,
         string memory _city,
         string memory _organization,
-        string memory _email,
         string[] memory _roles
     ) external
 ```
+
 ### 3.3 成员权限申请
 
 ```
@@ -123,23 +126,23 @@ contract BigDataDaoRole is AccessControl
 
 ```
     // 成员任务分配
-    function applyDatasetTask(address datasetAddress, address[] memory excludedApprovers, uint256 count,bytes32 _role) external view returns (address[] memory){
+    function applyDatasetTask(uint256 datasetID, address[] memory excludedApprovers, uint256 count,bytes32 _role) external view returns (address[] memory){
         // TODO:查询数据集当前执行任务的成员
         // TODO:更新任务记录表 
     }
 
     // 添加任务
-    function addTask(address _datasetAddress, address _memberAddress, bytes32 _role) internal {
+    function addTask(uint256 _datasetID, address _memberAddress, bytes32 _role) internal {
 
     }
 
     // 设置任务完成状态
-    function setTaskCompleted(address _datasetAddress, address _memberAddress, bool _completed) internal {
+    function setTaskCompleted(uint256 _datasetID, address _memberAddress, bool _completed) internal {
 
     }
 
     // 获取任务完成状态
-    function getTaskCompleted(address _datasetAddress, address _memberAddress) external view returns (bool) {
+    function getTaskCompleted(uint256t  _datasetID, address _memberAddress) external view returns (bool) {
     }
 
     // 获取成员信息
