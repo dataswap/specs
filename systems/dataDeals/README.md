@@ -140,7 +140,7 @@ uint256 public totalPledgeAmount;
 
 ## Storage Deal
 
-数据集撮合拍卖功能由Auction合约和Bid合约实现，数据集管理功能由BigData合约和Replica合约实现，存储交易管理功能由StorageTransaction合约实现，datacap管理功能由datacap合约实现，以下为各合约接口及属性相关定义。
+数据集撮合拍卖功能由Auction合约和Bid合约实现，数据集管理功能由存储合约实现，存储交易管理功能由StorageTransaction合约实现，以下为各合约接口及属性相关定义。
 
 ### 存储合约
 
@@ -200,7 +200,7 @@ uint256 public defaultReputation;   // 默认最小信誉值
 
 #### 存储合约方法
 
-- 创建副本：监听链上数据集发布事件，创建副本，同时发布副本交易订单。
+- 创建副本：监听链上数据集发布事件，创建副本，同时发布副本交易拍卖订单。
 - 更新副本状态：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
 - 续期：完成续期后，更新副本有效期。
 
@@ -249,7 +249,7 @@ enum AuctionState {
 - 结束投标（endBidding），拍卖最大时长到期后，触发结束投标操作，使用默认选择策略（价高者），将状态置为标的选中；如果拍卖周期内未收到投标时，重置拍卖最大时长发起下一轮投标，拍卖单状态为投标中。
 - 结束拍卖（endAuction），拍卖完成，完成其它未中标质押退款，状态置为完成状态。
 
-//拍卖ID => Bid[]
+//拍卖ID => Bid[]  
 maping(uint256 => Bid[])
 
 #### Bid属性
@@ -276,10 +276,20 @@ enum BidStatus {
 - 中标（selected），出价代币质押到监管合约，状态置为中标。
 - 取消（cancellation），取消出价竞拍，或未中标取消，出价代币从监管合约退款。状态置为已退款，完成所有取消工作后，状态置为取消。
 
+### StorageTransaction合约
+
+#### 合约实现
+
+继承ADataTransaction合约重写校验接口
+
 ### 存储校验算法实现
 
+存储校验算法处理流程
 
+![img](./img/StorageCheck.png)
 
+Proof包含：dealID, clientAddress, CID
+校验算法：比较链上dealID对应的clientAddress, CID，与Proof包含的是否一致。
 
 ## Retrieve Deal
 
