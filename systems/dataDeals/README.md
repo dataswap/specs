@@ -6,7 +6,11 @@
 
 数据交易公共接口约束数据交易基本操作，供各交易类型继承使用，以下为其接口及属性相关定义。
 
-### IDataTransaction方法
+#### IDataTransaction状态图
+
+![](./img/DataTransactionMachine.png)
+
+#### IDataTransaction方法
 
 - 创建交易。
 - 取消交易。
