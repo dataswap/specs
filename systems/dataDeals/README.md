@@ -2,50 +2,119 @@
 
 ## 公共功能合约
 
-### ADataTransaction合约
+### DataTransaction合约
 
 数据交易公共接口约束数据交易基本操作，供各交易类型继承使用，以下为其接口及属性相关定义。
 
-#### ADataTransaction状态图
+#### DataTransaction状态图
 
 ![](./img/DataTransactionMachine.png)
+#### DataTransaction属性定义
+```
+// 定义交易状态
+enum TransactionState { Published, ApplyForTask, InProgress, ProcessDispute, Failed, Completed }
 
-#### ADataTransaction方法
+// 定义交易结构
+struct Transaction {
+    uint256 transactionId;         // 交易ID
+    uint256 maxDuration;           // 交易最大时长 
+    uint256 maxDisputeDuration;    // 最大争议处理时间
+    address provider;              // 提供者
+    string transcationType;        //交易类型
+}
 
-- 创建交易。
-- 取消交易。
-- 证明校验。
-- 完成交易。
+uint256 public totalTransactions;
 
-#### ADataTransaction属性  
+// 存储所有交易信息
+mapping(uint256 => Transaction) public transactions;
 
-- 交易管理员（admin）
-- 交易客户（client）
-- 交易最大时长（maxTransactionDuration）
-- 证明（proof）
-- 状态（status）
+// 交易客户 
+mapping(uint256 => address) public clients;
 
-```solidity
-struct Transaction { 
-    address admin, 
-    address client, 
-    uint256 maxTransactionDuration,
-    string proof,
-    TransactionStatus status; 
+// 用于检查交易是否存在
+mapping(uint256 => bool) public transactionExists;
+
+// 存储交易状态
+mapping(uint256 => TransactionState) public transactionStatus;
+```
+#### DataTransaction方法
+
+```
+// 事件：交易发布
+event TransactionPublished(uint256 indexed transactionId, address indexed client);
+
+// 事件：交易状态变更
+event TransactionStatusChanged(uint256 indexed transactionId, uint256 newStatus);
+
+constructor() {
+    totalTransactions = 0;
+}
+
+// 修饰器：验证交易是否存在
+modifier transactionExistsModifier(uint256 transactionId) {
+    require(transactionExists[transactionId], "Transaction does not exist");
+    _;
+}
+
+// 修饰器：只能由客户调用
+modifier onlyClient(uint256 transactionId) {
+    require(clients[transactionId] == msg.sender, "Only client can perform this action");
+    _;
+}
+
+// 修饰器：只能由计算提供者调用
+modifier onlyProvider(uint256 transactionId) {
+    require(transactions[transactionId].provider == msg.sender, "Only provider can perform this action");
+    _;
+}
+
+// 发布计算交易
+function createTransaction(
+    address _provider,
+    uint256 _maxDuration,
+    uint256 _maxDisputeDuration,
+    string memory _transcationType 
+) external {
+    transactions[totalTransactions] = Transaction(
+        totalTransactions ,
+        _maxDuration,
+        _maxDisputeDuration,
+        _provider,
+        _transcationType
+    );
+
+    transactionStatus[totalTransactions] = TransactionState.Published;
+
+    transactionExists[totalTransactions] = true;
+
+    totalTransactions++;
+
+    emit TransactionPublished(totalTransactions, msg.sender);
+}
+
+// 改变交易状态，只允许内部调用
+function updateState(uint256 transactionID, uint256 newStatus) internal {
+    require(newStatus > uint256(TransactionState.Completed), "Invalid status"); // 确保状态值有效
+    transactionStatus[transactionID] = TransactionState(newStatus);
+    emit TransactionStatusChanged(transactionID, newStatus);
+}
+
+// 获取交易的状态
+function getState(uint256 transcationID) external view returns (TransactionState) {
+    return transactionStatus[transcationID];
+}
+
+// 获取交易客户
+function getTransactionClient(uint256 transactionID) external view returns (address) {
+    return clients[transactionID];
+}
+
+// 设置交易客户
+function setTransactionClient(uint256 transactionID,address client) external onlyProvider(transactionID){
+    clients[transactionID] = client;
+    updateState(transactionID, uint256(TransactionState.ApplyForTask));
 }
 ```
-
-#### StorageTransaction状态
-
-- 交易中（inProgress）
-- 失败（failure）
-- 完成（completion）
-
-```solidity
-enum TransactionStatus { InProgress, Failure, Completion }
-```
-
-
 ### Supervision合约（库）
 
 数据交易币质押支付相关功能由Supervision合约实现，以下为其接口及属性相关定义。
@@ -68,9 +137,9 @@ uint256 public totalPledgeAmount;
 
 数据集撮合拍卖功能由Auction合约和Bid合约实现，数据集管理功能由BigData合约和Replica合约实现，存储交易管理功能由StorageTransaction合约实现，datacap管理功能由datacap合约实现，以下为各合约接口及属性相关定义。
 
-### Replica存储合约
+### 存储合约
 
-#### Replica属性
+#### 属性定义
 
 ```solidity
 //副本定义
@@ -124,7 +193,7 @@ uint256 public defaultReputation;   // 默认最小信誉值
 
 ```
 
-#### Replica方法
+#### 存储合约方法
 
 - 更新存储：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
 - 续期：完成续期后，更新副本有效期。
@@ -220,8 +289,6 @@ enum BidStatus {
 ### 存储校验算法实现
 
 
-
-
 ## Retrieve Deal
 
 检索交易中，数据集下载交易功能由RetrieveTransaction合约实现，数据集检索查找功能由前端业务层实现，以下为合约接口及属性相关定义。
@@ -244,3 +311,4 @@ enum BidStatus {
 继承ADataTransaction合约重写校验接口
 
 #### 计算交易校验算法
+
