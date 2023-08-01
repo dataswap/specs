@@ -118,6 +118,8 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 计算交易car检查流程如下：
 ![img](./dataDeals/img/CarComputeCheck.jpg)
 
+car检查根据其实际应用特性，除了计算过程的证明校验，来证明一直在工作；在最终收货阶段，还需要进行一次完全性校验，来保证交付物的完整可用。
+
 计算交易Replica检查流程如下：
 ![img](./dataDeals/img/ReplicaComputeCheck.jpg)  
 
