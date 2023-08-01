@@ -2,20 +2,49 @@
 
 ## 公共功能合约
 
-### IDataTransaction合约（接口）
+### ADataTransaction合约
 
 数据交易公共接口约束数据交易基本操作，供各交易类型继承使用，以下为其接口及属性相关定义。
 
-#### IDataTransaction状态图
+#### ADataTransaction状态图
 
 ![](./img/DataTransactionMachine.png)
 
-#### IDataTransaction方法
+#### ADataTransaction方法
 
 - 创建交易。
 - 取消交易。
 - 证明校验。
 - 完成交易。
+
+#### ADataTransaction属性  
+
+- 交易管理员（admin）
+- 交易客户（client）
+- 交易最大时长（maxTransactionDuration）
+- 证明（proof）
+- 状态（status）
+
+```solidity
+struct Transaction { 
+    address admin, 
+    address client, 
+    uint256 maxTransactionDuration,
+    string proof,
+    TransactionStatus status; 
+}
+```
+
+#### StorageTransaction状态
+
+- 交易中（inProgress）
+- 失败（failure）
+- 完成（completion）
+
+```solidity
+enum TransactionStatus { InProgress, Failure, Completion }
+```
+
 
 ### Supervision合约（库）
 
@@ -60,6 +89,7 @@ enum ReplicaState { Storing, Active, Inactive }
 
 //副本当前存储状态
 struct ReplicaStorageStatus{
+    address clientAddress;     // 副本client账号
     address spAddress;     // 副本存储账号
     string spLocation;     // 副本存储区域要求
     ReplicaState  status;           // 存储进行中，存储有效，存储失效
@@ -187,108 +217,20 @@ enum BidStatus {
 }
 ```
 
-### datacap合约（库）
+### 存储校验算法实现
 
-#### datacap方法  
 
-- 查询：datacap相关信息查询。
-- 签发授权：指定拍卖单datacap分配。
-- 取消授权：取消指定拍卖单datacap分配。
-- 冻结授权：冻结指定拍卖单datacap使用。预留接口，官方暂时不支持冻结操作。
 
-#### datacap属性
-
-- datacap签发量（datacapUsed）
-
-```solidity
-struct DataCapInfo { 
-    uint256 datacapUsed; 
-}
-```
-
-### StorageTransaction合约
-
-#### StorageTransaction方法  
-
-- 创建交易：创建存储交易。
-- 取消交易：取消交易。
-- 证明校验：SP 周期性将已完成存储扇区proof信息提交。证明校验完成datacap与扇区CID有效性校验，存储时长校验。
-- 完成交易：存储交易数据被添加到SP可以证明数据存储的扇区中并完成校验。
-
-#### StorageTransaction属性  
-
-- 交易管理员（admin）
-- 交易客户（client）
-- 交易最大时长（maxTransactionDuration）
-- 证明（proof）
-- 状态（status）
-
-```solidity
-struct Transaction { 
-    address admin, 
-    address client, 
-    uint256 maxTransactionDuration,
-    string proof,
-    TransactionStatus status; 
-}
-```
-
-#### StorageTransaction状态
-
-- 交易中（inProgress）
-- 失败（failure）
-- 完成（completion）
-
-```solidity
-enum TransactionStatus { InProgress, Failure, Completion }
-```
 
 ## Retrieve Deal
 
 检索交易中，数据集下载交易功能由RetrieveTransaction合约实现，数据集检索查找功能由前端业务层实现，以下为合约接口及属性相关定义。
 
 ### RetrieveTransaction合约
+#### 合约实现
+继承ADataTransaction合约重写校验接口
 
-#### RetrieveTransaction事件
-
-- 质押成功
-- 完成进度
-
-```solidity
-event Pledged(address indexed payer, uint256 id);
-event ProgressSubmitted(uint256 indexed id, string signatureProof);
-```
-
-#### RetrieveTransaction方法
-
-- 创建交易：检索支付代币质押到监管合约，分配检索密钥。
-- 取消交易：取消交易。
-- 证明校验：RP 周期性将已传输完成扇区proof信息提交，证明校验完成签名校验与扇区CID有效性校验，触发自动分段支付。
-- 完成交易：确认所有交易证明已经校验完成。
-
-#### RetrieveTransaction属性
-
-- 交易管理员（admin）
-- 交易客户（client）
-- 交易最大时长（maxTransactionDuration）
-- 证明（proof）
-- 状态（status）
-
-```solidity
-struct Transaction { 
-    address admin, 
-    address client, 
-    uint256 maxTransactionDuration,
-    string proof,
-    TransactionStatus status; 
-}
-```
-
-#### RetrieveTransaction状态
-
-- 交易中（inProgress）
-- 失败（failure）
-- 完成（completion）
+#### RetrieveTransaction校验接口实现
 
 ## Compute Deal
 计算交易中，交易功能由ComputeTransaction合约实现，以下为合约接口及属性相关定义。
@@ -298,52 +240,7 @@ struct Transaction {
 计算交易类型分类：car计算、复制证明计算、时空证明计算
 计算交易状态设计：计算交易发布公示、计算任务承接申请、计算任务确认、计算前处理、计算进行中、计算后处理、计算失败、计算完成
 计算交易定义，包含信息：计算类型、计算交易ID、计算客户、计算承接人、计算交易状态、计算价格、交易最大时长、计算前处理证明、计算证明、计算后证明
+#### 合约实现
+继承ADataTransaction合约重写校验接口
 
-
-#### 计算交易事件
-
-- 质押成功
-- 完成进度
-
-```solidity
-event Pledged(address indexed payer, uint256 id);
-event ProgressSubmitted(uint256 indexed id, string signatureProof);
-```
-
-#### 计算交易方法
-
-- 创建交易：计算支付代币质押到监管合约。
-- 接受交易：Compute Provider接受计算任务。
-- 证明校验：校验证明信息是否正确。不同计算交易校验证明算法不同，以car生成计算为例，使用数据一致性算法验证其正确性。
-- 完成交易：完成所有证明校验。
-- 取消交易：取消交易。
-
-#### 计算交易属性
-
-- ID（identifier）
-- 说明（Description）
-- 价格（price）
-- 交易管理员（admin）
-- 交易客户（client）
-- 交易最大时长（maxTransactionDuration）
-- 证明（proof）
-- 状态（status）
-
-```solidity
-struct Transaction {
-    uint256 id;
-    string Description;
-    uint256 price;
-    address admin, 
-    address client, 
-    uint256 maxTransactionDuration,
-    string proof,
-    TransactionStatus status; 
-}
-```
-
-#### 计算交易状态
-
-- 交易中（inProgress）
-- 失败（failure）
-- 完成（completion）
+#### 计算交易校验算法
