@@ -79,9 +79,11 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - 数据集管理功能。
 
 存储交易流程如下：
+
 ![img](./dataDeals/img/StorageDeal.jpg)
 
 存储交易检查流程如下：
+
 ![img](./dataDeals/img/StorageDealCheck.jpg)
 
 [详细功能介绍](./dataDeals/README.md#Storage_Deal)
@@ -96,9 +98,11 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - 数据集下载交易功能
 
 检索交易流程如下：
+
 ![img](./dataDeals/img/RetrieveDeal.jpg)
 
 检索交易检查流程如下：
+
 ![img](./dataDeals/img/RetrieveDealCheck.jpg)
 
 [详细功能介绍](./dataDeals/README.md#Retrieve_Deal)
@@ -113,17 +117,21 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - 计算交易管理功能。
 
 计算交易流程如下：
+
 ![img](./dataDeals/img/ComputeDeal.jpg)
 
 计算交易car检查流程如下：
+
 ![img](./dataDeals/img/CarComputeCheck.jpg)
 
 car检查根据其实际应用特性，除了计算过程的证明校验，来证明一直在工作；在最终收货阶段，还需要进行一次完全性校验，来保证交付物的完整可用。
 
 计算交易Replica检查流程如下：
+
 ![img](./dataDeals/img/ReplicaComputeCheck.jpg)  
 
 计算交易PoSt检查流程如下：  
+
 ![img](./dataDeals/img/PoStComputeCheck.jpg)
 
 [详细功能介绍](./dataDeals/README.md#Compute_Deal)
