@@ -4,15 +4,15 @@
 生态角色
 |role|acronym|description|
 |:--:|:--:|:--|
-|Storage Provider|SP|(1)存储有用数据获取FIL奖励<br>(2)存储来自BigdataDAO的订单，获取BDF奖励|
-|Retrieve Provider|RP|(1)提供检索获取FIL奖励<br>(2)提供BigdataDAO检索节点，提供检索服务，获取BDF奖励|
-|Compute Provider|CP|(1)提供大数据分析挖掘服务,获取FIL或者BDF服务奖励<br>(2)提供生态常规计算，如DP计算、Seal计算、Proof计算获取FIL或者BDF服务奖励|
-|Metadata Provider|MDP|(1)提供全球范围内的有用数据集元数据，按照规范提交至BigdataDao,获取生态建设者BDF奖励|
-|Fulldata Provider|FDP|(1)将注册成功的元数据集下载、证明,形成可在BigdataDAO交易的数据包,获取生态建设者BDF奖励|
-|Metadata Reviewer|MDR|(1)审核dataset元数据有效性，获取生态建设者BDF奖励|
-|Fulldata Reviewer|FDR|(1)审核dataset源数据有效性，获取生态建设者BDF奖励|
-|Retrieve Client|/|(1)花费BDF获取检索服务|
-|Compute Client|/|(1)花费BDF获取计算服务|
+|Storage Provider|SP|(1)存储有用数据获取FIL奖励<br>(2)存储来自DataSwap的订单，获取奖励|
+|Retrieve Provider|RP|(1)提供检索获取FIL奖励<br>(2)提供DataSwap检索节点，提供检索服务，获取奖励|
+|Compute Provider|CP|(1)提供大数据分析挖掘服务,获取FIL或者服务奖励<br>(2)提供生态常规计算，如DP计算、Seal计算、Proof计算获取FIL或者服务奖励|
+|Metadata Provider|MDP|(1)提供全球范围内的有用数据集元数据，按照规范提交至DataSwap,获取生态建设者奖励|
+|Fulldata Provider|FDP|(1)将注册成功的元数据集下载、证明,形成可在DataSwap交易的数据包,获取生态建设者奖励|
+|Metadata Reviewer|MDR|(1)审核dataset元数据有效性，获取生态建设者奖励|
+|Fulldata Reviewer|FDR|(1)审核dataset源数据有效性，获取生态建设者奖励|
+|Retrieve Client|/|(1)花费FIL获取检索服务|
+|Compute Client|/|(1)花费FIL获取计算服务|
 
 ## 2.2 Data Authentication
 该章节描述符合[filecoin关于无须信任公证人设计构想](https://medium.com/filecoin-plus/ideation-trustless-notary-design-space-guidelines-bc21f6d9d5f2)的具体设计。
@@ -167,4 +167,3 @@ car检查根据其实际应用特性，除了计算过程的证明校验，来�
 
 ## 2.6 Rewards
 设计SP,RP,CP,MDP,FDP,MDR,FDR激励相容机制
-设计BDF的奖励机制

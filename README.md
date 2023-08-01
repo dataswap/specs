@@ -1,6 +1,6 @@
-# BigdataDAO Specs
+# dataswap specs
 
-BigdataDAO 是一个基于filecoin构建的layer2层区块链项目,它是一个基于区块链技术的去中心化开放数据交换平台，旨在汇聚全球各区域、各行业开放大数据集数据，实现人类有用数据的永久存储，并提供全面稳定的数据检索、下载、以及数据分析服务,推动人类数据共享共进步。
+dataswap是一个基于filecoin构建的layer2层区块链项目,它是一个基于区块链技术的去中心化开放数据交换平台，旨在汇聚全球各区域、各行业开放大数据集数据，实现人类有用数据的永久存储，并提供全面稳定的数据检索、下载、以及数据分析服务,推动人类数据共享共进步。
 
 ## Spec Status
 ### I. Spec Status Legend
@@ -30,3 +30,7 @@ BigdataDAO 是一个基于filecoin构建的layer2层区块链项目,它是一个
 
 |Repo|Language|CI|Test Coverage|Security Audit|
 |:---:|:---:|:---:|:---:|:---:|
+|core|solidity||||
+|dataswap.js|ts||||
+|explorer|ts||||
+|web|ts||||

@@ -6,7 +6,7 @@
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // 合约定义
-contract BigDataDaoRole is AccessControl 
+contract DataSwapRole is AccessControl 
 
 ```
 ## 2 状态变量设计
