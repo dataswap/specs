@@ -39,56 +39,7 @@ uint256 public totalPledgeAmount;
 
 数据集撮合拍卖功能由Auction合约和Bid合约实现，数据集管理功能由BigData合约和Replica合约实现，存储交易管理功能由StorageTransaction合约实现，datacap管理功能由datacap合约实现，以下为各合约接口及属性相关定义。
 
-### BigData合约
-
-#### BigData功能方法
-
-- 创建
-- 更新
-- 查询
-- 查询副本信息
-
-#### BigData属性
-
-- 说明（description）
-- 版本号（versionNumber）
-- ID（identifier）
-- 大小（size）
-- 位置（dataLocation）
-- 状态（status）
-- 副本数（replicasNumber）
-- 副本信息（replicaInformation）
-
-```solidity
-struct BigDataInfo {
-    string description;
-    string versionNumber;
-    uint256 identifier;
-    uint256 size;
-    string dataLocation;
-    DataStatus status;
-    uint256 replicasNumber;
-    Replica[] replicas;
-}
-```
-
-#### BigData状态
-
-- 有效
-- 无效
-
-```solidity
-enum DataStatus { Valid, Invalid }
-```
-
-### Replica合约
-
-#### Replica方法
-
-- 更新存储：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
-- 续期：完成续期后，更新副本有效期。
-- 设置检索价格：SP可以设置检索价格。
-- 更新CID与datacap映射信息。datacap分配时更新。
+### Replica存储合约
 
 #### Replica属性
 
@@ -142,6 +93,13 @@ uint256 public defautExpiration; // 默认存储时间
 uint256 public defaultReputation;   // 默认最小信誉值
 
 ```
+
+#### Replica方法
+
+- 更新存储：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
+- 续期：完成续期后，更新副本有效期。
+- 设置检索价格：SP可以设置检索价格。
+- 更新CID与datacap映射信息。datacap分配时更新。
 
 ### Auction合约
 
