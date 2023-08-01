@@ -92,36 +92,56 @@ enum DataStatus { Valid, Invalid }
 
 #### Replica属性
 
-- ID（identifier）
-- 状态（status）
-- 有效期（expiration）
-- SP地址（SP address）
-- SP位置（SP location）
-- SP带宽（SP bandwidth）
-- 存储价格（storagePrice）
-- 检索价格（retrievalPrice）
-- 分块序号（chunkNumber）
-- Map[CID]=datacap
-
 ```solidity
+//副本定义
 struct Replica {
-    uint256 id;
-    DataStatus status;
-    uint256 expiration;
-    address spAddress;
-    string spLocation;
-    string spBandwidth;
-    uint256 storagePrice;
-    uint256 retrievalPrice;
-    uint256 chunkNumber;
-    mapping(string => uint256) datacapByCID;
+    uint256 ID; // 副本ID
+    uint256 expiration;    // 有效期
+    uint256 datacapMinPriceUnit; // 单个Piece最低价格
+    uint256 datacapMaxPriceUnit; // 单个Piece直接成交价格
+    string[] spLocation;     // 副本存储区域要求
+    uint256 spBandwidth;   // 副本存储带宽要求
+    uint256 spReputation;   // 最小信誉值
 }
+
+//副本状态
+enum ReplicaState { Storing, Active, Inactive }
+
+//副本当前存储状态
+struct ReplicaStorageStatus{
+    address spAddress;     // 副本存储账号
+    string spLocation;     // 副本存储区域要求
+    ReplicaState  status;           // 存储进行中，存储有效，存储失效
+}
+
+//数据集切片
+struct DatasetSlice {
+    uint256 sliceId;
+    uint256 startHashNumber;
+    uint256 endHashNumber;
+}
+
+//数据集存储信息
+struct DatasetStorageInfo {
+    DatasetSlice[] slices
+    uint256 counter;
+    //数据集切片ID=>Replica[]
+    maping(uint256 => Replica[])
+    //replicaID=>ReplicaStatus
+    maping(uint256 => ReplicaStatus)
+}
+
+//数据集ID => DatasetStorageInfo
+maping(uint256 => DatasetStorageInfo)
+
+uint256 public defautMinPrice; //默认每个piece最低价格
+uint256 public defautMaxPrice; //默认每个piece直接成交价格
+uint256 public defautLocationsPerReplica; // 默认数据集切片最少要在多少个区域进行存储
+uint256 public defautBandwidth; // 默认带宽要求
+uint256 public defautExpiration; // 默认存储时间
+uint256 public defaultReputation;   // 默认最小信誉值
+
 ```
-
-#### Replica状态
-
-- 有效
-- 无效
 
 ### Auction合约
 
