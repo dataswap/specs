@@ -201,10 +201,18 @@ uint256 public defaultReputation;   // 默认最小信誉值
 #### 存储合约方法
 
 - 创建副本：监听链上数据集发布事件，创建副本，同时发布副本交易订单。
-- 更新副本信息：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
+- 更新副本状态：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
 - 续期：完成续期后，更新副本有效期。
 
 ### Auction合约
+
+拍卖状态流程如下
+
+![img](./img/Auction.jpg)
+
+竞标状态流程如下
+
+![img](./img/Bid.jpg)
 
 #### Auction属性
 
@@ -271,6 +279,8 @@ enum BidStatus {
 ### 存储校验算法实现
 
 
+
+
 ## Retrieve Deal
 
 检索交易中，数据集下载交易功能由RetrieveTransaction合约实现，数据集检索查找功能由前端业务层实现，以下为合约接口及属性相关定义。
@@ -280,6 +290,8 @@ enum BidStatus {
 继承ADataTransaction合约重写校验接口
 
 #### RetrieveTransaction校验接口实现
+
+提供链下证明生成及校验工具，
 
 ## Compute Deal
 计算交易中，交易功能由ComputeTransaction合约实现，以下为合约接口及属性相关定义。
