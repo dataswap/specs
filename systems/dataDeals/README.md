@@ -195,96 +195,73 @@ uint256 public defaultReputation;   // 默认最小信誉值
 
 #### 存储合约方法
 
-- 更新存储：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
+- 创建副本：监听链上数据集发布事件，创建副本，同时发布副本交易订单。
+- 更新副本信息：更新SP地址，有效期，更新存储状态为有效（完成拍卖及存储交易后）。
 - 续期：完成续期后，更新副本有效期。
-- 设置检索价格：SP可以设置检索价格。
-- 更新CID与datacap映射信息。datacap分配时更新。
 
 ### Auction合约
 
-#### Auction功能方法
-
-- 创建拍卖（createAuction），根据数据属性创建智能合约拍卖单，拍卖单状态为投标中。
-- 取消拍卖（cancelAuction），取消指定拍卖单，退款等清理操作完成后，状态置为取消。
-- 重启拍卖（restartAuction），拍卖单重新开启拍卖，状态置为投标中。
-- 一键拍卖（oneClickAuction），出价代币质押到监管合约，分配datacap与存储数据CID。状态置为完成状态。
-- 结束拍卖（endAuction），拍卖完成，状态置为完成状态。
-- 结束投标（endBidding），投标周期到期后，触发结束投标接口，将状态置为标的选择中；拍卖周期内未收到投标时，置为流标状态。
-- 选择出价（selectBid），根据出价及SP实际情况，选择合适的SP，分配datacap与存储数据CID。
-- 结束选择（endSelection），选择出价周期到期未选择时调用，使用默认选择策略（价高者），分配datacap与存储数据CID。
-- 查询拍卖（showAuction），查询拍卖单信息。
-
 #### Auction属性
-
-- 拍卖说明（dataDescription）
-- 副本ID（identifier）
-- 拍卖价格（storagePrice）
-- 拍卖最大时长（maxTransactionDuration）
 
 ```solidity
 struct AuctionItem {
-        string dataDescription;
-        uint256 identifier;
-        uint256 storagePrice;
-        uint256 maxTransactionDuration;
-    }
-```
+    string dataDescription; // 拍卖说明
+    uint256 ID;             // ID
+    uint256 replicaID;     // 副本ID
+    uint256 AuctionMinPrice; // 拍卖最低价格
+    uint256 AuctionMaxPrice; // 拍卖直接成交价格
+    uint256 maxDuration; // 拍卖最大时长
+}
 
-#### Auction状态
+// Auction状态
+struct AuctionStatus{
+    address BidAddress; // 中标人
+    uint256 BidPrice;   // 中标价格
+    AuctionState  status;
+}
 
-- 投标中（bidding）
-- 流标（failure）, 拍卖周期内未收到投标
-- 选择中（selection）
-- 确认中（confirmation）
-- 取消（cancellation）
-- 完成（completion）
-
-```solidity
- enum AuctionStatus { 
-    Bidding, 
-    Failure, 
-    Selection, 
-    Confirmation, 
-    Cancellation, 
-    Completion 
+enum AuctionState { 
+    Bidding, // 投标中
+    Selection, // 选中
+    Cancellation, // 取消
+    Completion // 完成
 }
 ```
 
-#### Bid功能方法
+#### Auction方法
 
-- 出价（placeBid），在拍卖单投标周期内，调用出价接口出价竞拍，状态置为投标中。
-- 中标（selected），出价代币质押到监管合约，状态置为已选择。
-- 取消（cancellation），取消出价竞拍，或未中标取消，出价代币从监管合约退款。状态置为已退款，完成所有取消工作后，状态置为取消。
+- 创建拍卖（createAuction），根据数据属性创建智能合约拍卖单，拍卖单状态为投标中。
+- 取消拍卖（cancelAuction），取消指定拍卖单，退款等清理操作完成后，状态置为取消。
+- 一键拍卖（oneClickAuction），出价代币质押到监管合约；完成其它已投标质押退款后，状态置为完成状态。
+- 结束投标（endBidding），拍卖最大时长到期后，触发结束投标操作，使用默认选择策略（价高者），将状态置为标的选中；如果拍卖周期内未收到投标时，重置拍卖最大时长发起下一轮投标，拍卖单状态为投标中。
+- 结束拍卖（endAuction），拍卖完成，完成其它未中标质押退款，状态置为完成状态。
+
+//拍卖ID => Bid[]
+maping(uint256 => Bid[])
 
 #### Bid属性
 
-- 投标金额（bidAmount）
-- 投标时间（bidTime）
-- 投标状态（bidStatus）
-
 ```solidity
 struct Bid {
-    uint256 bidAmount;
-    uint256 bidTime;
-    BidStatus bidStatus;
+    uint256 bidAmount; // 投标金额
+    uint256 bidTime;   // 投标时间
+    BidStatus bidStatus; // 投标状态
 }
-```
 
-#### Bid状态
-
-- 投标中（biddingInProgress）
-- 中标（selected）
-- 已退款（refunded）
-- 取消（cancellation）
-
-```solidity
+// Bid状态
 enum BidStatus { 
-    BiddingInProgress, 
-    Selected, 
-    Refunded, 
-    Cancellation 
+    BiddingInProgress, // 投标中
+    Selected,          // 中标
+    Refunded,          // 已退款
+    Cancellation       // 取消
 }
 ```
+
+#### Bid方法
+
+- 出价（placeBid），在拍卖单投标周期内，调用出价接口出价竞拍，状态置为投标中。
+- 中标（selected），出价代币质押到监管合约，状态置为中标。
+- 取消（cancellation），取消出价竞拍，或未中标取消，出价代币从监管合约退款。状态置为已退款，完成所有取消工作后，状态置为取消。
 
 ### 存储校验算法实现
 
