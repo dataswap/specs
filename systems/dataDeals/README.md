@@ -284,11 +284,12 @@ enum BidStatus {
 
 ### 存储校验算法实现
 
-存储校验算法处理流程
+存储校验处理流程
 
 ![img](./img/StorageCheck.png)
 
 Proof包含：dealID, clientAddress, CID
+
 校验算法：比较链上dealID对应的clientAddress, CID，与Proof包含的是否一致。
 
 ## Retrieve Deal
@@ -296,20 +297,51 @@ Proof包含：dealID, clientAddress, CID
 检索交易中，数据集下载交易功能由RetrieveTransaction合约实现，数据集检索查找功能由前端业务层实现，以下为合约接口及属性相关定义。
 
 ### RetrieveTransaction合约
-#### 合约实现
+
+#### 合约实现  
+
 继承ADataTransaction合约重写校验接口
 
 #### RetrieveTransaction校验接口实现
 
-提供链下证明生成及校验工具，
+检索校验处理流程
+
+![img](./img/RetrieveCheck.png)
+
+Proof包含：random, merkelProof, 源数据偏移位置。
+
+校验算法：校验merkelProof树的有效性，同时从链上获取源数据偏移位置数据对应的root hash，比较链上root hash与merkelProof包含的是否一致。
 
 ## Compute Deal
+
 计算交易中，交易功能由ComputeTransaction合约实现，以下为合约接口及属性相关定义。
 
 ### 计算交易合约
 
 #### 合约实现
+
 继承DataTransaction合约重写校验接口
 
 #### 计算交易校验算法
+
+Car计算校验处理流程
+
+![img](./img/CarCheck.png)
+
+Proof包含：random, merkelProof, 源数据偏移位置。
+
+校验算法：校验merkelProof树的有效性，同时从链上获取源数据偏移位置数据对应的root hash，比较链上root hash与merkelProof包含的是否一致。  
+
+PoSt计算校验处理流程
+
+![img](./img/PoStCheck.jpg)
+
+Proof包含：PoStProof。
+
+校验算法：官方校验算法。  
+
+复制阶段计算校验处理流程（待补充）
+
+
+复制证明阶段计算校验处理流程（待补充）
 
