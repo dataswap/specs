@@ -312,6 +312,8 @@ Proof包含：random, merkelProof, 源数据偏移位置。
 
 校验算法：校验merkelProof树的有效性，同时从链上获取源数据偏移位置数据对应的root hash，比较链上root hash与merkelProof包含的是否一致。
 
+思考： 证明提交上链与链上仲裁有没有意义？是否链下校验确认即可. 讨论认为达不到处理争议的效果，无意义，后面的计算校验也是一样的问题.
+
 ## Compute Deal
 
 计算交易中，交易功能由ComputeTransaction合约实现，以下为合约接口及属性相关定义。
@@ -339,6 +341,8 @@ PoSt计算校验处理流程
 Proof包含：PoStProof。
 
 校验算法：官方校验算法。  
+
+思考： 计算 post 考虑其时效性以及 post外发连续失败产生的损失.
 
 复制阶段计算校验处理流程（待补充）
 
