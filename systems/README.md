@@ -62,7 +62,6 @@ DataSet合约实现数据集信息注册、数据集状态变更、数据集查�
         DataProofSubmitted,
         DataApproved,
         DataProofVerificationInDispute,
-        Complete,
         Rejected
     }
     enum DatasetEvent{
@@ -73,9 +72,6 @@ DataSet合约实现数据集信息注册、数据集状态变更、数据集查�
         DataAuditRejected,
         // DataAuditRequireDispute event from chain
         DataAuditRequireDispute,
-        DataCompleteSubmitted,
-        // DataSubmissionExpired event from chain
-        DataSubmissionExpired
     }
 ```
 ```mermaid
@@ -89,9 +85,7 @@ stateDiagram
     DataProofSubmitted --> DataProofVerificationInDispute:DataAuditRequireDispute
     DataProofVerificationInDispute --> DataApproved:DataAuditApproved
     DataProofVerificationInDispute --> MetadataApproved:DataAuditRejected
-    DataApproved --> Complete:DataCompleteSubmitted
-    DataApproved --> MetadataApproved:DataSubmissionExpired
-    Complete-->[*]
+    DataAuditApproved-->[*]
     Rejected-->[*]
 ```
 
