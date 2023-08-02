@@ -85,7 +85,7 @@ stateDiagram
     DataProofSubmitted --> DataProofVerificationInDispute:DataAuditRequireDispute
     DataProofVerificationInDispute --> DataApproved:DataAuditApproved
     DataProofVerificationInDispute --> MetadataApproved:DataAuditRejected
-    DataAuditApproved-->[*]
+    DataApproved -->[*]
     Rejected-->[*]
 ```
 
