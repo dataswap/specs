@@ -54,6 +54,46 @@ DataSet合约实现数据集信息注册、数据集状态变更、数据集查�
 数据集被注册到合约开始在无须信任公证人合约中的评审的状态流转如下
 ![img](./dataAuthentication/img/datasetMachine.png)
 
+```js
+    //action: Must send solidity event after state changed
+    enum DatasetState{
+        MetadataSubmitted,
+        MetadataApproved,
+        DataProofSubmitted,
+        DataApproved,
+        DataProofVerificationInDispute,
+        Complete,
+        Rejected
+    }
+    enum DatasetEvent{
+        MetadataAuditApproved,
+        MetadataAuditRejected,
+        SubmitDataProof,
+        DataAuditApproved,
+        DataAuditRejected,
+        // DataAuditRequireDispute event from chain
+        DataAuditRequireDispute,
+        DataCompleteSubmitted,
+        // DataSubmissionExpired event from chain
+        DataSubmissionExpired
+    }
+```
+```mermaid
+stateDiagram
+    [*] --> MetadataSubmitted
+    MetadataSubmitted --> MetadataApproved:MetadataAuditApproved
+    MetadataSubmitted --> Rejected:MetadataAuditRejected
+    MetadataApproved --> DataProofSubmitted:SubmitDataProof
+    DataProofSubmitted --> DataApproved:DataAuditApproved
+    DataProofSubmitted --> MetadataApproved:DataAuditRejected
+    DataProofSubmitted --> DataProofVerificationInDispute:DataAuditRequireDispute
+    DataProofVerificationInDispute --> DataApproved:DataAuditApproved
+    DataProofVerificationInDispute --> MetadataApproved:DataAuditRejected
+    DataApproved --> Complete:DataCompleteSubmitted
+    DataApproved --> MetadataApproved:DataSubmissionExpired
+    Complete-->[*]
+    Rejected-->[*]
+```
 
 详细内容见[DataSet合约设计](./dataAuthentication/README.md#21-dataset合约设计)
 
