@@ -17,9 +17,9 @@ contract DataSwapRole is AccessControl
     bytes32 public constant RETRIEVE_PROVIDER_ROLE = keccak256("RP");
     bytes32 public constant COMPUTE_PROVIDER_ROLE = keccak256("CP");
     bytes32 public constant METADATA_PROVIDER_ROLE = keccak256("MDP");
-    bytes32 public constant FULLDATA_PROVIDER_ROLE = keccak256("FDP");
+    bytes32 public constant DATA_PROVIDER_ROLE = keccak256("DP");
     bytes32 public constant METADATA_REVIEWER_ROLE = keccak256("MDR");
-    bytes32 public constant FULLDATA_REVIEWER_ROLE = keccak256("FDR");
+    bytes32 public constant DATA_REVIEWER_ROLE = keccak256("DR");
     bytes32 public constant REVIEWER_CLIENT_ROLE = keccak256("RC");
     bytes32 public constant COMPUTE_CLIENT_ROLE = keccak256("CC");
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
