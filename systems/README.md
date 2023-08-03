@@ -157,6 +157,7 @@ stateDiagram
 
     note right of DataCapAuctionPublished 
       @Triggerer:DP
+      @Auction item: a copy of dataset partition
     end note
     note right of DataCapBiddingPaused
       @Triggerer:DP
@@ -165,7 +166,7 @@ stateDiagram
       @Triggerer:DP
     end note
     note right of DataCapAuctionCompleted
-      @action:Allocate datacap to DP
+      @Action:Allocate datacap to DP
     end note
 ```
 
