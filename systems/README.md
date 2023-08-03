@@ -86,10 +86,10 @@ stateDiagram
     MetadataRejected -->[*]
 
     note right of MetadataSubmitted
-      @note:Triggerer:MDP
+      @Triggerer:MDP
     end note
     note right of DataProofSubmitted
-      @note:Triggerer:DP
+      @Triggerer:DP
     end note
 ```
 
