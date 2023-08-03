@@ -173,6 +173,9 @@ stateDiagram
     note right of StorageAuctionCancelled 
       @Triggerer:Client
     end note
+    note right of StorageBiddingClosed
+      @Triggerer:anyone
+    end note
     note right of PreviousDataCapDataProofSubmitted
       @Triggerer:Client or SP
     end note
