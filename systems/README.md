@@ -141,6 +141,7 @@ stateDiagram
     Published    --> Failed:Condition__NotMetFILPlusRule
     InProgress   --> Paused:Pause
     Paused       --> InProgress:Resume
+    Paused       --> Failed:Condition__Expired
     Published    --> Cancelled:Cancel
     InProgress   --> Cancelled:Cancel
     Paused       --> Cancelled:Cancel
@@ -181,13 +182,12 @@ stateDiagram
         StorageCompleted
     }
     enum StorageDealEvent{
-        RequestInitialDatacapAllocation,
         SubmitPreviousDataCapProof
     }
 ```
 ```mermaid
 stateDiagram
-    [*]                                     --> DataCapChunkAllocated:RequestInitialDatacapAllocation
+    [*]                                     --> DataCapChunkAllocated:Condition_AuctionOrTenderCompleted
     DataCapChunkAllocated                   --> SubmitPreviousDataCapProofExpired:Condition_SubmitPreviousDataCapProofExpired
     DataCapChunkAllocated                   --> PreviousDataCapDataProofSubmitted:SubmitPreviousDataCapProof
     PreviousDataCapDataProofSubmitted       --> PreviousDataCapChunkVerificationFailed:Condition__DataCapChunkProofVerificationFailed
@@ -202,7 +202,7 @@ stateDiagram
     StorageFailed                           --> [*]
 
     note left of DataCapChunkAllocated
-      @Triggerer:DP or SP
+      @Triggerer:Auction or tender contarct
       @Condition:Both parties of the transaction must have successfully completed a storage auction or tender
     end note
     note right of SubmitPreviousDataCapProofExpired
