@@ -391,26 +391,29 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 	- 基于映射文件数据集切片car文件的单独生成
 	- 数据集原始文件扫描策略(含car文件大小配置)
 
-参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car
+参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car、go-unixfsnode
 
 ### 3.2 证明挑战算法
 
 #### 3.2.1 源文件证明挑战
+	- 源数据碎片(+映射文件+缓存树)到merkle证明的生成
 
 #### 3.2.2 car文件证明挑战
+	- car文件碎片(+映射文件+缓存树)到merkle证明的生成
 
 ### 3.3 校验
 
 #### 3.3.1 一致性证明的链上校验算法
+	- merkle证明的正确性校验 
 
 #### 3.3.2 一致性证明的通用校验算法
+	- merkle证明的正确性校验 
 
 ### 3.4 随机抽样算法
+	- car文件的随机挑战
+	- 源文件随机挑战点
 
-  -  car文件的随机挑战
-  -  源文件随机挑战点
 参考filecoin的随机挑战算法
 
 ### 3.5 源数据采样工具
-
-    通用源（aws\s3\http）数据碎片采样、下载%
+	- 通用源（aws\s3\http）数据碎片采样、下载%
