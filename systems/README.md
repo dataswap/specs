@@ -153,6 +153,7 @@ stateDiagram
     StorageBiddingClosed                    --> StorageAuctionFailed:Condition__NoWinningBidder
     StorageBiddingClosed                    --> DataCapChunkAllocated:Condition__BidderSelectedAsWinner
     DataCapChunkAllocated                   --> PreviousDataCapDataProofSubmitted:SubmitPreviousDataCapProof
+    DataCapChunkAllocated                   --> PreviousDataCapChunkVerificationFailed:Condition_SubmitPreviousDataCapProofExpired(Tigger by anyone)
     PreviousDataCapDataProofSubmitted       --> PreviousDataCapChunkVerificationFailed:Condition__DataCapChunkProofVerificationFailed
     PreviousDataCapDataProofSubmitted       --> DataCapChunkAllocated:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsNotLastChunk
     PreviousDataCapDataProofSubmitted       --> StorageAuctionFullyCompleted:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsLastChunk
