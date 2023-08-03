@@ -93,6 +93,7 @@ stateDiagram
     end note
 ```
 
+
 详细内容见[DataSet合约设计](./dataAuthentication/README.md#21-dataset合约设计)
 
 #### 2.2.2.2 TrustlessNotary合约设计
@@ -214,6 +215,27 @@ stateDiagram
     
 ```
 
+
+单个Car文件的状态机图
+```js
+    enum CarState{
+        Notverified,
+        WaitingForDealMatching,
+        DealMatched,
+        Stored
+    }
+```
+```mermaid
+stateDiagram
+    [*] --> Notverified
+    Notverified --> WaitingForDealMatching:Condition_DatasetAppoved
+    WaitingForDealMatching --> DealMatched:Condition_AuctionOrTenderCompleted
+    DealMatched --> Stored:Condition_StorageCompleted
+    DealMatched --> WaitingForDealMatching:Condition_StorageFailed
+
+    Stored --> WaitingForDealMatching:Condition_StorageDealExpired_Or_Slashed
+    Stored --> Stored:RenewalDeal
+```
 ![img](./dataDeals/img/StorageDeal.jpg)
 
 存储交易检查流程如下：
