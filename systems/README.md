@@ -154,8 +154,8 @@ stateDiagram
     StorageBiddingClosed                    --> DataCapChunkAllocated:Condition__BidderSelectedAsWinner
     DataCapChunkAllocated                   --> PreviousDataCapDataProofSubmitted:SubmitPreviousDataCapProof
     PreviousDataCapDataProofSubmitted       --> PreviousDataCapChunkVerificationFailed:Condition__DataCapChunkProofVerificationFailed
-    PreviousDataCapDataProofSubmitted       --> DataCapChunkAllocated:Condition__DataCapChunkProofVerified
-    PreviousDataCapDataProofSubmitted       --> StorageAuctionFullyCompleted:Condition__FullDataCapAllocated
+    PreviousDataCapDataProofSubmitted       --> DataCapChunkAllocated:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsNotLastChunk
+    PreviousDataCapDataProofSubmitted       --> StorageAuctionFullyCompleted:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsLastChunk
     PreviousDataCapChunkVerificationFailed  --> StorageAuctionFailed:Condition__PreviousDataCapChunkIsInitailChunk
     PreviousDataCapChunkVerificationFailed  --> StorageAuctionPartiallyCompleted:Condition__PreviousDataCapChunkIsNotInitailChunk
     StorageAuctionFullyCompleted            --> [*]
