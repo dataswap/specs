@@ -389,6 +389,7 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
     - 缓存树（car文件的merkle树,filecoin/ipfs存储）
 	- 元数据碎片到car碎片的生成
 	- 基于映射文件数据集切片car文件的单独生成
+	- 数据集原始文件扫描策略(含car文件大小配置)
 
 参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car
 
