@@ -123,6 +123,7 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
         BiddingInProgress,
         BiddingPaused,
         BiddingClosed,
+        AuctionCompleted,
         AuctionCancelled,
         AuctionFailed,
     }
