@@ -381,3 +381,36 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 ```
 
 ## 3 数据集证明工具集
+
+### 3.1 car生成工具
+    基于singularity改造，增加如下功能
+    - 数据集证明信息（上链）
+    - 源文件与car的映射关系
+    - 缓存树（car文件的merkle树,filecoin/ipfs存储）
+	- 元数据碎片到car碎片的生成
+	- 基于映射文件数据集切片car文件的单独生成
+	- 数据集原始文件扫描策略(含car文件大小配置)
+
+参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car
+
+### 3.2 证明挑战算法
+
+#### 3.2.1 源文件证明挑战
+
+#### 3.2.2 car文件证明挑战
+
+### 3.3 校验
+
+#### 3.3.1 一致性证明的链上校验算法
+
+#### 3.3.2 一致性证明的通用校验算法
+
+### 3.4 随机抽样算法
+
+  -  car文件的随机挑战
+  -  源文件随机挑战点
+参考filecoin的随机挑战算法
+
+### 3.5 源数据采样工具
+
+    通用源（aws\s3\http）数据碎片采样、下载%
