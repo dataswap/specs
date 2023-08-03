@@ -9,8 +9,8 @@
 |Compute Provider|CP|(1)提供大数据分析挖掘服务,获取FIL或者生态奖励<br>(2)提供生态常规计算，如DP计算、Seal计算、Proof计算获取FIL或者生态奖励|
 |Metadata Provider|MDP|(1)提供全球范围内的有用数据集元数据，按照规范提交至DataSwap,获取生态建设者奖励|
 |Data Provider|DP|(1)将注册成功的元数据集下载、证明,形成可在DataSwap交易的数据包,获取生态建设者奖励|
-|Metadata Reviewer|MDR|(1)审核dataset元数据有效性，获取生态建设者奖励|
-|Data Reviewer|DR|(1)审核dataset源数据有效性，获取生态建设者奖励|
+|Metadata Auditor|MDA|(1)审核dataset元数据有效性，获取生态建设者奖励|
+|Data Auditor|DA|(1)审核dataset源数据有效性，获取生态建设者奖励|
 |Retrieve Client|/|(1)花费FIL获取检索服务|
 |Compute Client|/|(1)花费FIL获取计算服务|
 
@@ -44,9 +44,9 @@
 
 ### 2.2.2 合约设计
 无须认证公正人合约实现下述三个主要功能
-- Dataset Register : 由MDP提交数据集信息，标题、行业分类、名称、描述、数据来源、所有者、创建时间、创建者、修改历史，由MDR向合约提交内容审核结果，确认源内容与MDP提交的数据集信息是否一致；
+- Dataset Register : 由MDP提交数据集信息，标题、行业分类、名称、描述、数据来源、所有者、创建时间、创建者、修改历史，由MDA向合约提交内容审核结果，确认源内容与MDP提交的数据集信息是否一致；
 - Dataset Proof : DP利用数据证明工具（根据数据集一致性算法设计）生成数据集证明，即数据集证明mekeles树,合约校验数据集证明是否为一颗完整的merkle树；
-- Dataset Verify : DR利用数据证明校验生成工具（根据数据集一致性算法设计）生成数据集证明校验，合约汇总校验信息，判断数据证明是否有效，如果数据集证明有效则说明数据集证明merkle树是源数据在一致性算法下的唯一水印，可以发布数据；
+- Dataset Verify : DA利用数据证明校验生成工具（根据数据集一致性算法设计）生成数据集证明校验，合约汇总校验信息，判断数据证明是否有效，如果数据集证明有效则说明数据集证明merkle树是源数据在一致性算法下的唯一水印，可以发布数据；
   
 #### 2.2.2.1 DataSet合约设计
 
@@ -59,7 +59,7 @@
         DataProofSubmitted,
         DataApproved,
         DataProofVerificationInDispute,
-        Rejected
+        MetadataRejected
     }
     enum DatasetEvent{
         MetadataAuditApproved,
@@ -75,7 +75,7 @@
 stateDiagram
     [*] --> MetadataSubmitted
     MetadataSubmitted --> MetadataApproved:MetadataAuditApproved
-    MetadataSubmitted --> Rejected:MetadataAuditRejected
+    MetadataSubmitted --> MetadataRejected:MetadataAuditRejected
     MetadataApproved --> DataProofSubmitted:SubmitDataProof
     DataProofSubmitted --> DataApproved:DataAuditApproved
     DataProofSubmitted --> MetadataApproved:DataAuditRejected
@@ -83,7 +83,14 @@ stateDiagram
     DataProofVerificationInDispute --> DataApproved:DataAuditApproved
     DataProofVerificationInDispute --> MetadataApproved:DataAuditRejected
     DataApproved -->[*]
-    Rejected -->[*]
+    MetadataRejected -->[*]
+
+    note right of MetadataSubmitted
+      @note:Triggerer:MDP
+    end note
+    note right of DataProofSubmitted
+      @note:Triggerer:DP
+    end note
 ```
 
 详细内容见[DataSet合约设计](./dataAuthentication/README.md#21-dataset合约设计)
@@ -193,8 +200,8 @@ car检查根据其实际应用特性，除了计算过程的证明校验，来�
 - CP 声誉
 - MDP 声誉
 - DP 声誉
-- MDR 声誉
-- DR 声誉
+- MDA 声誉
+- DA 声誉
 
 ## 2.6 Rewards
-设计SP,RP,CP,MDP,DP,MDR,DR激励相容机制
+设计SP,RP,CP,MDP,DP,MDA,DA激励相容机制
