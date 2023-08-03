@@ -118,56 +118,65 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 
 存储交易流程如下：
 ```js
-    enum DataCapAuctionState{
-        DataCapAuctionPublished,
-        DataCapBiddingInProgress,
-        DataCapBiddingPaused,
-        DataCapBiddingClosed,
-        DataCapAuctionCompleted,
-        DataCapAuctionCancelled,
-        DataCapAuctionFailed
+    enum StorageAuctionState{
+        StorageAuctionPublished,
+        StorageBiddingInProgress,
+        StorageBiddingPaused,
+        StorageBiddingClosed,
+        StorageAuctionCancelled,
+        DataCapChunkAllocated,
+        PreviousDataCapDataProofSubmitted,
+        PreviousDataCapChunkVerificationFailed,
+        StorageAuctionFailed,
+        StorageAuctionPartiallyCompleted,
+        StorageAuctionFullyCompleted
     }
-    enum DataCapAuctionEvent{
-        MetFILPlusRule,
-        NotMetFILPlusRule,
+    enum StorageAuctionEvent{
         PauseAuction,
         ResumeAuction,
         CancelAuction,
         BiddingTimeExpired,
-        BidderSelectedAsWinner,
-        NoWinningBidder
+        SubmitPreviousDataCapProof
     }
 ```
 ```mermaid
 stateDiagram
-    [*] --> DataCapAuctionPublished
-    DataCapAuctionPublished  --> DataCapBiddingInProgress:MetFILPlusRule
-    DataCapAuctionPublished  --> DataCapAuctionFailed:NotMetFILPlusRule
-    DataCapBiddingInProgress --> DataCapBiddingPaused:PauseAuction
-    DataCapBiddingPaused     --> DataCapBiddingInProgress:ResumeAuction
-    DataCapAuctionPublished  --> DataCapAuctionCancelled:CancelAuction
-    DataCapBiddingInProgress --> DataCapAuctionCancelled:CancelAuction
-    DataCapBiddingPaused     --> DataCapAuctionCancelled:CancelAuction
-    DataCapBiddingInProgress --> DataCapBiddingClosed:BiddingTimeExpired
-    DataCapBiddingClosed     --> DataCapAuctionCompleted:BidderSelectedAsWinner
-    DataCapBiddingClosed     --> DataCapAuctionFailed:NoWinningBidder
-    DataCapAuctionCompleted --> [*]
-    DataCapAuctionFailed --> [*]
-    DataCapAuctionCancelled --> [*] 
+    [*]                                     --> StorageAuctionPublished
+    StorageAuctionPublished                 --> StorageBiddingInProgress:Condition__MetFILPlusRule
+    StorageAuctionPublished                 --> StorageAuctionFailed:Condition__NotMetFILPlusRule
+    StorageBiddingInProgress                --> StorageBiddingPaused:PauseAuction
+    StorageBiddingPaused                    --> StorageBiddingInProgress:ResumeAuction
+    StorageAuctionPublished                 --> StorageAuctionCancelled:CancelAuction
+    StorageBiddingInProgress                --> StorageAuctionCancelled:CancelAuction
+    StorageBiddingPaused                    --> StorageAuctionCancelled:CancelAuction
+    StorageBiddingInProgress                --> StorageBiddingClosed:BiddingTimeExpired
+    StorageBiddingClosed                    --> StorageAuctionFailed:Condition__NoWinningBidder
+    StorageBiddingClosed                    --> DataCapChunkAllocated:Condition__BidderSelectedAsWinner
+    DataCapChunkAllocated                   --> PreviousDataCapDataProofSubmitted:SubmitPreviousDataCapProof
+    PreviousDataCapDataProofSubmitted       --> PreviousDataCapChunkVerificationFailed:Condition__DataCapChunkProofVerificationFailed
+    PreviousDataCapDataProofSubmitted       --> DataCapChunkAllocated:Condition__DataCapChunkProofVerified
+    PreviousDataCapDataProofSubmitted       --> StorageAuctionFullyCompleted:Condition__FullDataCapAllocated
+    PreviousDataCapChunkVerificationFailed  --> StorageAuctionFailed:Condition__PreviousDataCapChunkIsInitailChunk
+    PreviousDataCapChunkVerificationFailed  --> StorageAuctionPartiallyCompleted:Condition__PreviousDataCapChunkIsNotInitailChunk
+    StorageAuctionFullyCompleted            --> [*]
+    StorageAuctionPartiallyCompleted        --> [*]
+    StorageAuctionFailed                    --> [*]
+    StorageAuctionCancelled                 --> [*] 
 
-    note right of DataCapAuctionPublished 
-      @Triggerer:DP
+    note left of StorageAuctionPublished 
+      @Triggerer:Client
       @Auction item: a copy of dataset partition
     end note
-    note right of DataCapBiddingPaused
-      @Triggerer:DP
+    note right of StorageBiddingPaused
+      @Triggerer:Client
     end note
-    note right of DataCapAuctionCancelled 
-      @Triggerer:DP
+    note right of StorageAuctionCancelled 
+      @Triggerer:Client
     end note
-    note right of DataCapAuctionCompleted
-      @Action:Allocate datacap to DP
+    note right of PreviousDataCapDataProofSubmitted
+      @Triggerer:Client or SP
     end note
+    
 ```
 
 ![img](./dataDeals/img/StorageDeal.jpg)
