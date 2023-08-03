@@ -117,6 +117,54 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - 数据集管理功能。
 
 存储交易流程如下：
+```js
+    enum AuctionState{
+        AuctionPublished,
+        BiddingInProgress,
+        BiddingPaused,
+        BiddingClosed,
+        AuctionCompleted,
+        AuctionCancelled,
+        AuctionFailed
+    }
+    enum AuctionEvent{
+        MetFILPlusRule,
+        NotMetFILPlusRule,
+        PauseAuction,
+        ResumeAuction,
+        CancelAuction,
+        BiddingTimeExpired,
+        NoWinningBidder,
+        NoWinningBidder
+    }
+```
+```mermaid
+stateDiagram
+    [*] --> AuctionPublished
+    AuctionPublished --> BiddingInProgress:MetFILPlusRule
+    AuctionPublished --> AuctionFailed:NotMetFILPlusRule
+    BiddingInProgress --> BiddingPaused:PauseAuction
+    BiddingPaused --> BiddingInProgress:ResumeAuction
+    AuctionPublished --> AuctionCancelled:CancelAuction
+    BiddingInProgress --> AuctionCancelled:CancelAuction
+    BiddingPaused --> AuctionCancelled:CancelAuction
+    BiddingInProgress --> BiddingClosed:BiddingTimeExpired
+    BiddingClosed --> AuctionCompleted:BidderSelectedAsWinner
+    BiddingClosed --> AuctionFailed:NoWinningBidder
+    AuctionCompleted --> [*]
+    AuctionFailed --> [*]
+    AuctionCancelled --> [*] 
+
+    note right of AuctionPublished 
+      @Triggerer:DP
+    end note
+    note right of BiddingPaused
+      @Triggerer:DP
+    end note
+    note right of AuctionCancelled 
+      @Triggerer:DP
+    end note
+```
 
 ![img](./dataDeals/img/StorageDeal.jpg)
 
