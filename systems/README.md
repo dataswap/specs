@@ -118,51 +118,54 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 
 存储交易流程如下：
 ```js
-    enum AuctionState{
-        AuctionPublished,
-        BiddingInProgress,
-        BiddingPaused,
-        BiddingClosed,
-        AuctionCompleted,
-        AuctionCancelled,
-        AuctionFailed
+    enum DataCapAuctionState{
+        DataCapAuctionPublished,
+        DataCapBiddingInProgress,
+        DataCapBiddingPaused,
+        DataCapBiddingClosed,
+        DataCapAuctionCompleted,
+        DataCapAuctionCancelled,
+        DataCapAuctionFailed
     }
-    enum AuctionEvent{
+    enum DataCapAuctionEvent{
         MetFILPlusRule,
         NotMetFILPlusRule,
         PauseAuction,
         ResumeAuction,
         CancelAuction,
         BiddingTimeExpired,
-        NoWinningBidder,
+        BidderSelectedAsWinner,
         NoWinningBidder
     }
 ```
 ```mermaid
 stateDiagram
-    [*] --> AuctionPublished
-    AuctionPublished --> BiddingInProgress:MetFILPlusRule
-    AuctionPublished --> AuctionFailed:NotMetFILPlusRule
-    BiddingInProgress --> BiddingPaused:PauseAuction
-    BiddingPaused --> BiddingInProgress:ResumeAuction
-    AuctionPublished --> AuctionCancelled:CancelAuction
-    BiddingInProgress --> AuctionCancelled:CancelAuction
-    BiddingPaused --> AuctionCancelled:CancelAuction
-    BiddingInProgress --> BiddingClosed:BiddingTimeExpired
-    BiddingClosed --> AuctionCompleted:BidderSelectedAsWinner
-    BiddingClosed --> AuctionFailed:NoWinningBidder
-    AuctionCompleted --> [*]
-    AuctionFailed --> [*]
-    AuctionCancelled --> [*] 
+    [*] --> DataCapAuctionPublished
+    DataCapAuctionPublished  --> DataCapBiddingInProgress:MetFILPlusRule
+    DataCapAuctionPublished  --> DataCapAuctionFailed:NotMetFILPlusRule
+    DataCapBiddingInProgress --> DataCapBiddingPaused:PauseAuction
+    DataCapBiddingPaused     --> DataCapBiddingInProgress:ResumeAuction
+    DataCapAuctionPublished  --> DataCapAuctionCancelled:CancelAuction
+    DataCapBiddingInProgress --> DataCapAuctionCancelled:CancelAuction
+    DataCapBiddingPaused     --> DataCapAuctionCancelled:CancelAuction
+    DataCapBiddingInProgress --> DataCapBiddingClosed:BiddingTimeExpired
+    DataCapBiddingClosed     --> DataCapAuctionCompleted:BidderSelectedAsWinner
+    DataCapBiddingClosed     --> DataCapAuctionFailed:NoWinningBidder
+    DataCapAuctionCompleted --> [*]
+    DataCapAuctionFailed --> [*]
+    DataCapAuctionCancelled --> [*] 
 
-    note right of AuctionPublished 
+    note right of DataCapAuctionPublished 
       @Triggerer:DP
     end note
-    note right of BiddingPaused
+    note right of DataCapBiddingPaused
       @Triggerer:DP
     end note
-    note right of AuctionCancelled 
+    note right of DataCapAuctionCancelled 
       @Triggerer:DP
+    end note
+    note right of DataCapAuctionCompleted
+      @action:Allocate datacap to DP
     end note
 ```
 
