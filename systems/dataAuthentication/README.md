@@ -387,8 +387,9 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
     - 数据集证明信息（上链）
     - 源文件与car的映射关系
     - 缓存树（car文件的merkle树,filecoin/ipfs存储）
+	- 元数据碎片到car碎片的生成
+	- 基于映射文件数据集切片car文件的单独生成
 
-优化:元数据碎片到car碎片的生成
 参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car
 
 ### 3.2 证明挑战算法
