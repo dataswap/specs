@@ -116,69 +116,96 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - datacap管理功能。
 - 数据集管理功能。
 
-存储交易流程如下：
+竞拍状态图
 ```js
-    enum StorageAuctionState{
-        StorageAuctionPublished,
-        StorageBiddingInProgress,
-        StorageBiddingPaused,
-        StorageBiddingClosed,
-        StorageAuctionCancelled,
-        DataCapChunkAllocated,
-        PreviousDataCapDataProofSubmitted,
-        PreviousDataCapChunkVerificationFailed,
-        StorageAuctionFailed,
-        StorageAuctionPartiallyCompleted,
-        StorageAuctionFullyCompleted
+    enum AuctionState{
+        AuctionPublished,
+        BiddingInProgress,
+        BiddingPaused,
+        BiddingClosed,
+        AuctionCancelled,
+        AuctionFailed,
     }
-    enum StorageAuctionEvent{
+    enum AuctionEvent{
+        PublishAuction,
         PauseAuction,
         ResumeAuction,
-        CancelAuction,
-        BiddingTimeExpired,
+        CancelAuction
+    }
+```
+```mermaid
+stateDiagram
+    [*]                 --> AuctionPublished:PublishAuction
+    AuctionPublished    --> BiddingInProgress:Condition__MetFILPlusRule
+    AuctionPublished    --> AuctionFailed:Condition__NotMetFILPlusRule
+    BiddingInProgress   --> BiddingPaused:PauseAuction
+    BiddingPaused       --> BiddingInProgress:ResumeAuction
+    AuctionPublished    --> AuctionCancelled:CancelAuction
+    BiddingInProgress   --> AuctionCancelled:CancelAuction
+    BiddingPaused       --> AuctionCancelled:CancelAuction
+    BiddingInProgress   --> BiddingClosed:Condition__BiddingTimeExpired
+    BiddingClosed       --> AuctionFailed:Condition__NoWinningBidder
+    BiddingClosed       --> AuctionCompleted:Condition__BidderSelectedAsWinner
+    AuctionCompleted    --> [*]
+    AuctionFailed       --> [*]
+    AuctionCancelled    --> [*] 
+
+    note right of AuctionPublished
+      @Triggerer:Client
+      @Auction item: a copy of dataset partition
+    end note
+    note right of BiddingPaused
+      @Triggerer:Client
+    end note
+    note right of AuctionCancelled 
+      @Triggerer:Client
+    end note
+    note right of BiddingClosed
+      @Triggerer:anyone
+    end note
+```
+
+存储交易状态图
+```js
+    enum StorageDealState{
+        DataCapChunkAllocated,
+        SubmitPreviousDataCapProofExpired,
+        PreviousDataCapDataProofSubmitted,
+        PreviousDataCapChunkVerificationFailed,
+        StorageFailed,
+        StoragePartiallyCompleted,
+        StorageCompleted
+    }
+    enum StorageDealEvent{
+        RequestInitialDatacapAllocation,
         SubmitPreviousDataCapProof
     }
 ```
 ```mermaid
 stateDiagram
-    [*]                                     --> StorageAuctionPublished
-    StorageAuctionPublished                 --> StorageBiddingInProgress:Condition__MetFILPlusRule
-    StorageAuctionPublished                 --> StorageAuctionFailed:Condition__NotMetFILPlusRule
-    StorageBiddingInProgress                --> StorageBiddingPaused:PauseAuction
-    StorageBiddingPaused                    --> StorageBiddingInProgress:ResumeAuction
-    StorageAuctionPublished                 --> StorageAuctionCancelled:CancelAuction
-    StorageBiddingInProgress                --> StorageAuctionCancelled:CancelAuction
-    StorageBiddingPaused                    --> StorageAuctionCancelled:CancelAuction
-    StorageBiddingInProgress                --> StorageBiddingClosed:BiddingTimeExpired
-    StorageBiddingClosed                    --> StorageAuctionFailed:Condition__NoWinningBidder
-    StorageBiddingClosed                    --> DataCapChunkAllocated:Condition__BidderSelectedAsWinner
+    [*]                                     --> DataCapChunkAllocated:RequestInitialDatacapAllocation
+    DataCapChunkAllocated                   --> SubmitPreviousDataCapProofExpired:Condition_SubmitPreviousDataCapProofExpired
     DataCapChunkAllocated                   --> PreviousDataCapDataProofSubmitted:SubmitPreviousDataCapProof
-    DataCapChunkAllocated                   --> PreviousDataCapChunkVerificationFailed:Condition_SubmitPreviousDataCapProofExpired(Tigger by anyone)
     PreviousDataCapDataProofSubmitted       --> PreviousDataCapChunkVerificationFailed:Condition__DataCapChunkProofVerificationFailed
     PreviousDataCapDataProofSubmitted       --> DataCapChunkAllocated:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsNotLastChunk
-    PreviousDataCapDataProofSubmitted       --> StorageAuctionFullyCompleted:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsLastChunk
-    PreviousDataCapChunkVerificationFailed  --> StorageAuctionFailed:Condition__PreviousDataCapChunkIsInitailChunk
-    PreviousDataCapChunkVerificationFailed  --> StorageAuctionPartiallyCompleted:Condition__PreviousDataCapChunkIsNotInitailChunk
-    StorageAuctionFullyCompleted            --> [*]
-    StorageAuctionPartiallyCompleted        --> [*]
-    StorageAuctionFailed                    --> [*]
-    StorageAuctionCancelled                 --> [*] 
+    PreviousDataCapDataProofSubmitted       --> StorageCompleted:Condition__DataCapChunkProofVerified_And_PreviousDataCapIsLastChunk
+    PreviousDataCapChunkVerificationFailed  --> StorageFailed:Condition__PreviousDataCapChunkIsInitailChunk
+    PreviousDataCapChunkVerificationFailed  --> StoragePartiallyCompleted:Condition__PreviousDataCapChunkIsNotInitailChunk
+    SubmitPreviousDataCapProofExpired       --> StorageFailed:Condition__PreviousDataCapChunkIsInitailChunk
+    SubmitPreviousDataCapProofExpired       --> StoragePartiallyCompleted:Condition__PreviousDataCapChunkIsNotInitailChunk
+    StorageCompleted                        --> [*]
+    StoragePartiallyCompleted               --> [*]
+    StorageFailed                           --> [*]
 
-    note left of StorageAuctionPublished 
-      @Triggerer:Client
-      @Auction item: a copy of dataset partition
+    note left of DataCapChunkAllocated
+      @Triggerer:DP or SP
+      @Condition:Both parties of the transaction must have successfully completed a storage auction
     end note
-    note right of StorageBiddingPaused
-      @Triggerer:Client
-    end note
-    note right of StorageAuctionCancelled 
-      @Triggerer:Client
-    end note
-    note right of StorageBiddingClosed
+    note right of SubmitPreviousDataCapProofExpired
       @Triggerer:anyone
     end note
     note right of PreviousDataCapDataProofSubmitted
-      @Triggerer:Client or SP
+      @Triggerer:DP or SP
     end note
     
 ```
