@@ -116,52 +116,55 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 - datacap管理功能。
 - 数据集管理功能。
 
-竞拍状态图
+竞拍和招标状态图
 ```js
-    enum AuctionState{
-        AuctionPublished,
-        BiddingInProgress,
-        BiddingPaused,
-        BiddingClosed,
-        AuctionCompleted,
-        AuctionCancelled,
-        AuctionFailed,
+    enum AuctionAndTenderState{
+        Published,
+        InProgress,
+        Paused,
+        Closed,
+        Completed,
+        Cancelled,
+        Failed,
     }
-    enum AuctionEvent{
-        PublishAuction,
-        PauseAuction,
-        ResumeAuction,
-        CancelAuction
+    enum AuctionAndTenderEvent{
+        Publish,
+        Pause,
+        Resume,
+        Cancel
     }
 ```
 ```mermaid
 stateDiagram
-    [*]                 --> AuctionPublished:PublishAuction
-    AuctionPublished    --> BiddingInProgress:Condition__MetFILPlusRule
-    AuctionPublished    --> AuctionFailed:Condition__NotMetFILPlusRule
-    BiddingInProgress   --> BiddingPaused:PauseAuction
-    BiddingPaused       --> BiddingInProgress:ResumeAuction
-    AuctionPublished    --> AuctionCancelled:CancelAuction
-    BiddingInProgress   --> AuctionCancelled:CancelAuction
-    BiddingPaused       --> AuctionCancelled:CancelAuction
-    BiddingInProgress   --> BiddingClosed:Condition__BiddingTimeExpired
-    BiddingClosed       --> AuctionFailed:Condition__NoWinningBidder
-    BiddingClosed       --> AuctionCompleted:Condition__BidderSelectedAsWinner
-    AuctionCompleted    --> [*]
-    AuctionFailed       --> [*]
-    AuctionCancelled    --> [*] 
+    [*]          --> Published:Publish
+    Published    --> InProgress:Condition__MetFILPlusRule
+    Published    --> Failed:Condition__NotMetFILPlusRule
+    InProgress   --> Paused:Pause
+    Paused       --> InProgress:Resume
+    Published    --> Cancelled:Cancel
+    InProgress   --> Cancelled:Cancel
+    Paused       --> Cancelled:Cancel
+    InProgress   --> Closed:Condition__Expired
+    Closed       --> Failed:Condition__NoWinner
+    Closed       --> Completed:Condition__HasWinner
+    Completed    --> [*]
+    Failed       --> [*]
+    Cancelled    --> [*] 
 
-    note right of AuctionPublished
-      @Triggerer:Client
-      @Auction item: a copy of dataset partition
+    note right of Published
+      @Auction Triggerer:DP
+      @Tender Triggerer:SP
+      @Auction/Tender item: a copy of dataset partition
     end note
-    note right of BiddingPaused
-      @Triggerer:Client
+    note right of Paused
+      @Auction Triggerer:DP
+      @Tender Triggerer:SP
     end note
-    note right of AuctionCancelled 
-      @Triggerer:Client
+    note right of Cancelled 
+      @Auction Triggerer:DP
+      @Tender Triggerer:SP
     end note
-    note right of BiddingClosed
+    note right of Closed
       @Triggerer:anyone
     end note
 ```
@@ -200,7 +203,7 @@ stateDiagram
 
     note left of DataCapChunkAllocated
       @Triggerer:DP or SP
-      @Condition:Both parties of the transaction must have successfully completed a storage auction
+      @Condition:Both parties of the transaction must have successfully completed a storage auction or tender
     end note
     note right of SubmitPreviousDataCapProofExpired
       @Triggerer:anyone
