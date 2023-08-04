@@ -92,7 +92,7 @@ stateDiagram
       @Triggerer:DP
     end note
     note right of DataApproved
-      @TODO:must verify: make sure source=>car relation files to filecoin
+      @note :must storaged DatasetProofData berfore pushlish dataset match.
     end note
 ```
 
@@ -160,6 +160,7 @@ stateDiagram
       @Auction Triggerer:DP
       @Tender Triggerer:SP
       @Auction/Tender item: a copy of dataset partition
+      @Condition: 1 dataset is DataApprove;2 dataset ProofData must included by a completed MatchId and had completed its storage deal.
     end note
     note right of Paused
       @Auction Triggerer:DP
