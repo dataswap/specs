@@ -91,6 +91,9 @@ stateDiagram
     note right of DataProofSubmitted
       @Triggerer:DP
     end note
+    note right of DataApproved
+      @TODO:must verify: make sure source=>car relation files to filecoin
+    end note
 ```
 
 
@@ -212,19 +215,38 @@ stateDiagram
     note right of PreviousDataCapDataProofSubmitted
       @Triggerer:DP or SP
     end note
+    note right of StoragePartiallyCompleted
+      @Action:pick complete/failed cid and change its state
+    end note
     
 ```
 
 
 单个Car文件的状态机图
 ```js
-    enum CarState{
+    enum CarReplicaState{
         Notverified,
         WaitingForDealMatching,
         DealMatched,
         Stored
     }
+
+    sturct CarReplica{
+        uint256 id,//hash id
+        uint256 matchType, //Acution or Tender
+        uint256 matchId,
+        CarReplicaState state,
+        uint256 expiredBlockNumber
+    }
+
+    struct Car{
+        uint256 id,
+        uint256 replicaCount,
+        // replica number => CarReplica
+        mapping(uint256=>CarReplica) storageInfo 
+    }
 ```
+
 ```mermaid
 stateDiagram
     [*] --> Notverified
@@ -235,6 +257,18 @@ stateDiagram
 
     Stored --> WaitingForDealMatching:Condition_StorageDealExpired_Or_Slashed
     Stored --> Stored:RenewalDeal
+```
+
+DatasetStorageInfo 数据结构
+```js
+    struct DatasetStorageInfo {
+        //dataset ID => (car id = > Car info)
+        maping(uint256 => maping(uint256 => Car))
+    }
+```
+
+
+```solidity
 ```
 ![img](./dataDeals/img/StorageDeal.jpg)
 
