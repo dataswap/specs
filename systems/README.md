@@ -233,10 +233,10 @@ stateDiagram
 
     sturct CarReplica{
         uint256 id,//hash id
-        uint256 matchType, //Acution or Tender
+        uint256 matchType, //Acution or Tender,TODO
         uint256 matchId,
         CarReplicaState state,
-        uint256 expiredBlockNumber
+        uint256 dealId
     }
 
     struct Car{
@@ -258,7 +258,7 @@ stateDiagram
     Stored --> WaitingForDealMatching:Condition_StorageDealExpired_Or_Slashed
     Stored --> Stored:RenewalDeal
 ```
-TODO:Slashed process
+TODO:Slashed process,自己承认->举报机制
 
 DatasetStorageInfo 数据结构
 ```js
