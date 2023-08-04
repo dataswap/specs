@@ -258,6 +258,7 @@ stateDiagram
     Stored --> WaitingForDealMatching:Condition_StorageDealExpired_Or_Slashed
     Stored --> Stored:RenewalDeal
 ```
+TODO:Slashed process
 
 DatasetStorageInfo 数据结构
 ```js
