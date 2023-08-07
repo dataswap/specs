@@ -383,15 +383,174 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 ## 3 数据集证明工具集
 
 ### 3.1 car生成工具
-    基于singularity改造，增加如下功能
+增加如下功能
+    - 基于singularity改造
     - 数据集证明信息（上链）
     - 源文件与car的映射关系
     - 缓存树（car文件的merkle树,filecoin/ipfs存储）
-	- 元数据碎片到car碎片的生成
-	- 基于映射文件数据集切片car文件的单独生成
 	- 数据集原始文件扫描策略(含car文件大小配置)
 
 参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car、go-unixfsnode
+
+#### 3.1.1 源文件扫描策略
+// TODO: 构建源文件扫描策略使同一份源文件能够输出相同的数据集证明
+
+#### 3.1.2 映射文件生成
+映射文件生成基于对[generate-car](https://github.com/tech-greedy/generate-car)的改造完成，不影响generate-car原有功能，增加映射文件的保存
+
+##### 3.1.2.1 go-unixfs二次开发设计
+定义Helper接口
+```
+type Helper interface {
+	Done() bool
+	Next() ([]byte, error)
+	GetDagServ() ipld.DAGService
+	GetCidBuilder() cid.Builder
+	NewLeafNode(data []byte, fsNodeType pb.Data_DataType) (ipld.Node, error)
+	FillNodeLayer(node *FSNodeOverDag) error
+	NewLeafDataNode(fsNodeType pb.Data_DataType) (node ipld.Node, dataSize uint64, err error)
+	ProcessFileStore(node ipld.Node, dataSize uint64) ipld.Node
+	Add(node ipld.Node) error
+	Maxlinks() int
+	NewFSNodeOverDag(fsNodeType pb.Data_DataType) *FSNodeOverDag
+	NewFSNFromDag(nd *dag.ProtoNode) (*FSNodeOverDag, error)
+}
+```
+实现Helper接口并对NewLeafDataNode重新封装，记录源数据构造node的源文件信息
+定义Helper接口实例
+```
+
+// Helper回调函数,构造car文件node时将node cid及node类型回传
+type HelperAction func(node ipld.Node, nodeType pb.Data_DataType)
+
+// Helper接口实例
+type WrapDagBuilder struct {
+	db  *ihelper.DagBuilderHelper  //原Helper
+	hcb HelperAction //helper回调函数
+}
+
+```
+
+改造Layout和fillNodeRec采用Helper接口实现car文件dag布局,car文件的生成布局方法不改动，只在node加入dag时调用Helper回调将cid和节点类型传回
+
+Layout策略如下:
+```
+//	       +-------------+
+//	       |   Root 1    |
+//	       +-------------+
+//	              |
+//	 ( fillNodeRec fills in the )
+//	 ( chunks on the root.      )
+//	              |
+//	       +------+------+
+//	       |             |
+//	  + - - - - +   + - - - - +
+//	  | Chunk 1 |   | Chunk 2 |
+//	  + - - - - +   + - - - - +
+//
+//	                     ↓
+//	When the root is full but there's more data...
+//	                     ↓
+//
+//	       +-------------+
+//	       |   Root 1    |
+//	       +-------------+
+//	              |
+//	       +------+------+
+//	       |             |
+//	  +=========+   +=========+   + - - - - +
+//	  | Chunk 1 |   | Chunk 2 |   | Chunk 3 |
+//	  +=========+   +=========+   + - - - - +
+//
+//	                     ↓
+//	...Layout's job is to create a new root.
+//	                     ↓
+//
+//	                      +-------------+
+//	                      |   Root 2    |
+//	                      +-------------+
+//	                            |
+//	              +-------------+ - - - - - - - - +
+//	              |                               |
+//	       +-------------+            ( fillNodeRec creates the )
+//	       |   Node 1    |            ( branch that connects    )
+//	       +-------------+            ( "Root 2" to "Chunk 3."  )
+//	              |                               |
+//	       +------+------+             + - - - - -+
+//	       |             |             |
+//	  +=========+   +=========+   + - - - - +
+//	  | Chunk 1 |   | Chunk 2 |   | Chunk 3 |
+//	  +=========+   +=========+   + - - - - +
+
+```
+
+##### 3.1.2.2 go-ipfs-chunker二次开发设计
+
+该包用于将原数据切分以构建dag，默认采用SizeSpliter将源数据按大小相等创建数据块，基于SizeSplider进行改造，在切分数据块时将源文件信息传回
+定义splitter
+```
+type sliceSplitter struct {
+	r    io.Reader     // 数据源
+	size uint32        // 数据块切分的大小
+	err  error
+
+	srcPath string     // 记录原文件路径
+	cb SplitterAction  // 允许外部传入回调函数获取原始文件读取信息
+	offset uint64      // 记录当前文件读取offset
+}
+```
+
+定义splitter回调函数,用于metaservice接受源文件数据
+```
+type SplitterAction func(srcPath string, offset uint64, size uint32, eof bool)
+```
+
+##### 3.1.2.3 metasevice设计
+metaservice以node cid追踪node源数据和car文件node之间的关联
+```
+//chunk meta数据定义
+type ChunkMeta struct {
+	SrcPath   string           `json:"srcpath"`    //该chunk 采集源文件的路径
+	SrcOffset uint64           `json:"srcoffset"`  //该chunk data所在的源文件偏移
+	Size      uint32           `json:"size"`       //该chunk data大小
+	DstPath   string           `json:"dstpath"`    //该chunk所在的car文件路径
+	DstOffset uint64           `json:"dstoffset"`  //该chunk在目标car中偏移
+	NodeType  pb.Data_DataType `json:"nodetype"`   //node类型
+	Cid       cid.Cid          `json:"cid"`        //node cid
+	Links     []*ipld.Link           `json:links`  // node的chunk,即子node
+}
+//获取一个chunk在目标car中的start和结束位置
+func (cm *ChunkMeta) GetDstRange(c cid.Cid) (uint64, uint64)
+
+//定义源数据信息
+type SrcData struct {
+	Path   string
+	Offset uint64
+	Size   uint32
+}
+```
+
+```
+// MetaService定义
+type MetaService struct {
+	spl    chunker.Splitter //Splitter
+	writer io.Writer        //writer
+	helper ihelper.Helper   //Helper
+
+	metas map[cid.Cid]*types.ChunkMeta  //源数据列表
+	lk    sync.Mutex
+
+	splCh chan *types.SrcData           //用于回传源数据信息
+
+	calc          *commp.Calc           //commp计算器
+	hashs         map[uint]map[int][]byte   //层数->节点序号->hash
+	hlk           sync.Mutex
+}
+
+```
+
+##### 3.1.2.4 generate-car二次开发设计
+
 
 ### 3.2 证明挑战算法
 
