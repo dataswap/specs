@@ -397,9 +397,10 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 
 #### 3.1.2 映射文件生成
 映射文件生成基于对[generate-car](https://github.com/tech-greedy/generate-car)的改造完成，不影响generate-car原有功能，增加映射文件的保存
-
+![metaservice](./img/metaservice.png)
 ##### 3.1.2.1 go-unixfs二次开发设计
 定义Helper接口
+
 ```
 type Helper interface {
 	Done() bool
@@ -415,11 +416,13 @@ type Helper interface {
 	NewFSNodeOverDag(fsNodeType pb.Data_DataType) *FSNodeOverDag
 	NewFSNFromDag(nd *dag.ProtoNode) (*FSNodeOverDag, error)
 }
-```
-实现Helper接口并对NewLeafDataNode重新封装，记录源数据构造node的源文件信息
-定义Helper接口实例
+
 ```
 
+实现Helper接口并对NewLeafDataNode重新封装，记录源数据构造node的源文件信息
+定义Helper接口实例
+
+```
 // Helper回调函数,构造car文件node时将node cid及node类型回传
 type HelperAction func(node ipld.Node, nodeType pb.Data_DataType)
 
@@ -564,7 +567,8 @@ type WrapWriter struct {
 	before WriteBeforeAction    //car写入前Action 句柄
 }
 
-重写func (bc *WrapWriter) Write(p []byte) (int, error) 记录写入信息，重新实现Writer
+重写func (bc *WrapWriter) Write(p []byte) (int, error) 记录写入信息，重新实现 Writer
+
 ```
 
 
