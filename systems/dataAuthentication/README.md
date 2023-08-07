@@ -534,7 +534,7 @@ type SrcData struct {
 // MetaService定义
 type MetaService struct {
 	spl    chunker.Splitter //Splitter
-	writer io.Writer        //writer
+	writer io.Writer        //目标car文件writer
 	helper ihelper.Helper   //Helper
 
 	metas map[cid.Cid]*types.ChunkMeta  //源数据列表
@@ -547,7 +547,26 @@ type MetaService struct {
 	hlk           sync.Mutex
 }
 
+
+//目标writer封装
+//写入后Action
+type WriteAfterAction func(path string, cid cid.Cid, count int, offset uint64)
+
+//写入前Action
+type WriteBeforeAction func([]byte, io.Writer) ([]byte, error)
+
+//writer封装
+type WrapWriter struct {
+	io.Writer                   //目标car writer
+	path   string               //目标car path
+	offset uint64               //当前的写入offset
+	after  WriteAfterAction     //car写入后Action 句柄
+	before WriteBeforeAction    //car写入前Action 句柄
+}
+
+重写func (bc *WrapWriter) Write(p []byte) (int, error) 记录写入信息，重新实现Writer
 ```
+
 
 ##### 3.1.2.4 generate-car二次开发设计
 
