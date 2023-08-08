@@ -105,11 +105,11 @@ TrustlessNotary合约实现数据集内容提交集审核逻辑、数据集证�
 
 详细内容见[TrustlessNotary合约设计](./dataAuthentication/README.md#22-trustlessnotary合约设计)
 
-### 2.2.3 数据集证明工具集
+### 2.2.3 一致性证明工具集
 
-数据集证明工具集用于实现一致性证明算法，包括数据集证明的生成、源数据采样、校验工具
+一致性证明工具集用于实现一致性证明算法，包括数据集证明的生成、源数据采样、校验工具
 
-详见[数据集证明工具集设计](./dataAuthentication/README.md#3-数据集证明工具集设计)
+详见[一致性证明工具集设计](./dataAuthentication/README.md#3-一致性证明工具集设计)
 
 ## 2.3 Data Deals
 

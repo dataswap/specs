@@ -380,7 +380,7 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 
 ```
 
-## 3 数据集证明工具集设计
+## 3 一致性证明工具集设计
 
 ### 3.1 car生成工具
 增加如下功能
