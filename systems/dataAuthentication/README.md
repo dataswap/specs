@@ -392,12 +392,16 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 
 参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car、go-unixfsnode
 
+car生成工具通过对go-unixfs、go-ipfs-chunker、以及对Writer的改造，通过对generate-car扩展实现功能,原理如下:
+
+![metaservice](./img/metaservice.png)
+
 #### 3.1.1 源文件扫描策略
 // TODO: 构建源文件扫描策略使同一份源文件能够输出相同的数据集证明
 
 #### 3.1.2 映射文件生成
 映射文件生成基于对[generate-car](https://github.com/tech-greedy/generate-car)的改造完成，不影响generate-car原有功能，增加映射文件的保存
-![metaservice](./img/metaservice.png)
+
 ##### 3.1.2.1 go-unixfs二次开发设计
 定义Helper接口
 
