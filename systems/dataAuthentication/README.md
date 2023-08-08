@@ -440,7 +440,7 @@ type WrapDagBuilder struct {
 
 改造Layout和fillNodeRec采用Helper接口实现car文件dag布局,car文件的生成布局方法不改动，只在node加入dag时调用Helper回调将cid和节点类型传回
 
-Layout策略如下:
+[go-unixfs](https://github.com/ipfs/go-unixfs)中关于Layout策略如下:
 ```
 //	       +-------------+
 //	       |   Root 1    |
