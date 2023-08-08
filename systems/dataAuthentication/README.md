@@ -392,7 +392,10 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 
 参考工具：singularity(generate-car)、boost（验证参考项目）、依赖go-unixfs、go-car、go-unixfsnode
 
-car生成工具通过对go-unixfs、go-ipfs-chunker、以及对Writer的改造，通过对generate-car扩展实现功能,原理如下:
+car生成工具通过对go-unixfs、go-ipfs-chunker、以及对Writer的改造，通过对generate-car扩展实现功能
+MerkleTree 通过[go-merkletree](https://github.com/txaty/go-merkletree)实现commP以及一致性证明的生成
+
+原理如下:
 
 ![metaservice](./img/metaservice.png)
 
