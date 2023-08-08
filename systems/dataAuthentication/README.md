@@ -380,7 +380,7 @@ function setVerificationSubmittersCount(uint32 count) external onlyOwner {
 
 ```
 
-## 3 数据集证明工具集
+## 3 数据集证明工具集设计
 
 ### 3.1 car生成工具
 增加如下功能
@@ -507,9 +507,18 @@ type sliceSplitter struct {
 ```
 type SplitterAction func(srcPath string, offset uint64, size uint32, eof bool)
 ```
+实现Splitter接口并通过SplitterAction实现源文件拆分信息的输出
+```
+type Splitter interface {
+	Reader() io.Reader
+	NextBytes() ([]byte, error) //封装对SplitterAction的调用实现源数据信息的采集
+	Bytes(start, offset int) ([]byte, error)
+}
+```
 
 ##### 3.1.2.3 metasevice设计
 metaservice以node cid追踪node源数据和car文件node之间的关联
+
 ```
 //chunk meta数据定义
 type ChunkMeta struct {
@@ -522,6 +531,7 @@ type ChunkMeta struct {
 	Cid       cid.Cid          `json:"cid"`        //node cid
 	Links     []*ipld.Link           `json:links`  // node的chunk,即子node
 }
+
 //获取一个chunk在目标car中的start和结束位置
 func (cm *ChunkMeta) GetDstRange(c cid.Cid) (uint64, uint64)
 
@@ -568,7 +578,6 @@ type WrapWriter struct {
 }
 
 重写func (bc *WrapWriter) Write(p []byte) (int, error) 记录写入信息，重新实现 Writer
-
 ```
 
 
