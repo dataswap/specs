@@ -401,6 +401,9 @@ MerkleTree 通过[go-merkletree](https://github.com/txaty/go-merkletree)实现co
 
 #### 3.1.1 源文件扫描策略
 // TODO: 构建源文件扫描策略使同一份源文件能够输出相同的数据集证明
+- 从数据源到本地的文件规范化下载
+- 从源数据到car文件映射信息，控制到单个car的生成(包含其源数据下载)
+
 
 #### 3.1.2 映射文件生成
 映射文件生成基于对[generate-car](https://github.com/tech-greedy/generate-car)的改造完成，不影响generate-car原有功能，增加映射文件的保存
