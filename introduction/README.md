@@ -18,7 +18,7 @@
 ### 1.2.1 Layered Architecture Diagram
 ![img](./img/architecture.png)
 
-Layer2 meets the requirements of [Ideation: Trustless Notary Design Space + Guidelines](https://medium.com/filecoin-plus/ideation-trustless-notary-design-space-guidelines-bc21f6d9d5f2)
+Layer2(dataswap storage) meets the requirements of [Ideation: Trustless Notary Design Space + Guidelines](https://medium.com/filecoin-plus/ideation-trustless-notary-design-space-guidelines-bc21f6d9d5f2)
 
 ### 1.2.2 Data Lifecycle Diagram
 ![img](./img/dataLifecycle.png)
