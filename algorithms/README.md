@@ -1,30 +1,55 @@
+# Algorithm Design
 
-# 算法设计
-
-## 1 目标
-提出数据一致性校验算法，赋能有效数据存储，支撑无须信任公证人实现:
-- 实现对有效数据的存储的证明和校验；
-- 以更细的粒度监控客户有效数据存储和校验；
-- 通过代码降低公证人工作的复杂度；
-- 将datacap和公证人签名解耦，从而避免作恶行为；
+## 1 Objectives
+The objective is to propose a dataset consistency verification algorithm that empowers efficient data storage, supporting trustless notary by:
+- Enabling proof and verification of valid data storage.
+- Monitoring customer's valid data storage and verification at a finer granularity.
+- Reducing the complexity of notory work through code.
+- Decoupling datacap and notary signatures to prevent malicious behavior.
 
 ## 2 Dataset Consistency Algorithm
 ### 2.1 介绍
-基于一致性算法可以证明数据集原始数据与filecoin存储的数据集的一致性
-我们知道filecoin存储交易的存储数据是car文件形式，每个数据集在filecoin上的存储最终体现为一系列car文件的存储完成
-- 数据集一致性算法基于merkle证明，car文件的pieceCid是car文件的merkle树根hash,称为leafHash
-- 由全部car文件的根hash构成数据集的一颗merkle树，merkle树的根为rootHash 这棵树被称为数据集证明，作为数据集的指纹，这一数据指纹存储到链上
-- 一致性算法将每个car文件切分为数据碎片（1M\2M）car文件的数据碎片到car的根hash，即leafHash构成的merkle树称为，数据集的校验树，这些校验树存储到filecoin网络中
-- 生成数据集校验树的过程中同时生成原始数据到car数据碎片的映射文件称为数据集校验树源文件；
-- 通过校验树源文件和校验树，配合引入随机性可以通过从源文件获取数兆级别的原始文件生成随机采样点到leafHash的merkle证明，这可以证明原始文件是否在脸上数据集指纹锁代表的原始数据是否一致；
-- 通过上述证明我们可以知道只要存储数据指纹中leafHash（即PieceCID）所对应的car文件，即存储了与原始数据一致的数据集文件；
-- 上述所描述数据证明有和数据集校验信息的提交是DataSwap成员基于数据集一致性算法形成的共识；
-- 因为leafHash（即PieceCID）被提前校验，在DataCap分配时可以将发放粒度控制到一个car文件级别的自动发放和管理；
+Based on the dataset consistency algorithm, it is possible to prove the consistency between the original dataset and the dataset stored on Filecoin. It is known that the storage data of Filecoin transactions is in the form of CAR files. The storage of each dataset on Filecoin is ultimately represented by a series of completed CAR file storage.
 
-### 2.2 原理
+#### 2.1.1 术语
+**CarLeafHash**
 
-数据一致性校验算法基本原理如下图所示:
-![数据一致性校验算法原理图](./img/datasetConsistencyAlgorithm.png)
+>The dataset consistency algorithm splits each car file into multiple data fragments (such as 1M\2M). The hash value of each data fragment is referred to as CarLeafHash.
+
+**CarRootHash** and **CarMerkleTree**
+
+>The CarRootHash of a car file can be obtained by constructing a CarMerkleTree using all the CarLeafHashes in the car file. The CarMerkleTree is stored on the Filecoin network (off-chain).
+
+**DatasetLeafHash**:
+
+>The CarRootHash (pieceCid) of a car file is equivalent to the DatasetLeafHash.
+
+**DatasetRootHash** and **DatasetMerkleTree**:
+
+>The DatasetRootHash of dataset can be obtained by constructing a DatasetMerkleTree using all the DatasetLeafHash(CarRootHash). The DatasetMerkleTree is stored on-chain. 
+
+**MappingFiles**
+
+>The file that contains the mapping relationship between each Car and the source files that constitute it, including the Car-to-source file mapping and the source file-to-Car mapping, is called MappingFiles The MappingFiles is stored on the Filecoin network (off-chain).
+
+**CarProof**
+
+>CarProofs are composed of CarMerkleTree and MappingFiles.TheCarProof is stored on the Filecoin network (off-chain) .
+
+**DatasetProof**
+
+>DatasetProof consists of a DatasetMerkleTree and CarProofs corresponding to all DatasetLeafHashes(CarRootHash). The DatasetMerkleTree is stored on-chain, while the CarProofs are stored on the Filecoin network (off-chain) .
+
+
+### 2.2 Principles
+- The DP needs to submit the DatasetProof to the business contract, where the DatasetMerkleTree is stored on-chain, and the CarProofs are stored on the Filecoin network (to save on-chain resources).
+- The DA challenges specific DatasetLeafHashes (CarRootHashes) and CarLeafHashes through random challenges.
+- The DA downloads partial file data of the CarProofs corresponding to the challenged CarRootHashes and CarLeafHashes from the Filecoin network (meeting the proof requirements, typically in the MB-level).
+- The DA submits the challenged DatasetHash Merkle Proof and CarRootHash Merkle Proof to the blockchain as challenge proof information for verification.
+- Through multi-point challenges and multiple participants' challenges, random challenges are performed on multiple Car files to ensure the correctness of the entire dataset.
+- Due to this algorithm, the system can allocate DataCap at the granularity of individual car files for automatic distribution and management.
+
+![Diagram of Dataset Consistency Verification Algorithm](./img/datasetConsistencyAlgorithm.png)
 
 ## 3 Dataset Consistency Proof and Verification Toolset
 
