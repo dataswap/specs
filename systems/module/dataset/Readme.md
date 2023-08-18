@@ -76,7 +76,7 @@ struct Dataset {
     //proof
     string mappingFilesAccessMethod; // Method of accessing data (e.g., URL, API).
     DatasetProof sourceProof; // Proof associated with the dataset.
-    DatasetProof mappingFilesProof; // Note:mappingFiles includes mappingFiles and CarMerkleTree,Proof associated with the dataset.
+    DatasetProof mappingFilesProof; // TODO:mappingFiles includes mappingFiles and CarMerkleTree,Proof associated with the dataset. need change to a better name
     //verifications
     uint16 verificationsCount;
     mapping(address => Verification) verifications; // Address of the auditor who submits challenges.
