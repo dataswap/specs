@@ -53,10 +53,9 @@ Based on the dataset consistency algorithm, it is possible to prove the consiste
 
 ## 3 Dataset Consistency Proof and Verification Toolset
 
-Dataset Consistency Proof and Verification Toolset用于实现dataset一致性证明算法，包括数据集证明的生成、源数据采样、校验工具.
+The Dataset Consistency Proof and Verification Toolset is designed to implement the dataset consistency proof algorithm. It includes functionalities for generating dataset proofs, sampling source data, and verification tools.
 
-
-### 3.1 car生成工具
+### 3.1 CAR Generation Tool
 Based on Singularity, the following features can be added:
 - DatasetMerkleTree of DatasetProof (On-chain)
 - CarProofs(MappingFiles and CarMerkleTree) of DatasetProof(Off-chain,stored on IPFS/filecoin) 
