@@ -1,15 +1,15 @@
 
 # 算法设计
 
-## 1 简介
-### 1.1 目标
+## 1 目标
 提出数据一致性校验算法，赋能有效数据存储，支撑无须信任公证人实现:
 - 实现对有效数据的存储的证明和校验；
 - 以更细的粒度监控客户有效数据存储和校验；
 - 通过代码降低公证人工作的复杂度；
 - 将datacap和公证人签名解耦，从而避免作恶行为；
 
-### 1.2 一致性算法介绍
+## 2 Dataset Consistency Algorithm
+### 2.1 介绍
 基于一致性算法可以证明数据集原始数据与filecoin存储的数据集的一致性
 我们知道filecoin存储交易的存储数据是car文件形式，每个数据集在filecoin上的存储最终体现为一系列car文件的存储完成
 - 数据集一致性算法基于merkle证明，car文件的pieceCid是car文件的merkle树根hash,称为leafHash
@@ -21,12 +21,12 @@
 - 上述所描述数据证明有和数据集校验信息的提交是DataSwap成员基于数据集一致性算法形成的共识；
 - 因为leafHash（即PieceCID）被提前校验，在DataCap分配时可以将发放粒度控制到一个car文件级别的自动发放和管理；
 
-## 2 一致性算法原理
+### 2.2 原理
 
 数据一致性校验算法基本原理如下图所示:
 ![数据一致性校验算法原理图](./img/datasetConsistencyAlgorithm.png)
 
-## 3 一致性证明工具集
+## 3 Dataset Consistency Proof and Verification Toolset
 
 一致性证明工具集用于实现一致性证明算法，包括数据集证明的生成、源数据采样、校验工具
 
