@@ -60,6 +60,7 @@ Based on Singularity, the following features can be added:
 - DatasetMerkleTree of DatasetProof (On-chain)
 - CarProofs(MappingFiles and CarMerkleTree) of DatasetProof(Off-chain,stored on IPFS/filecoin) 
 - Dataset Original File Scanning Strategy (including CAR file size configuration)
+- Ensuring that CarRootHash can be converted to PieceCID without requiring PadCommP
 
 Reference Tools:
 - Singularity: A tool for generating CAR files.
