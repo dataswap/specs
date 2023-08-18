@@ -32,9 +32,13 @@ The Dataset module, specifically DatasetMetadata, DatasetProof, and DatasetVerif
 In summary, Dataswap storage, through its dataset module components (DatasetMetadata, DatasetProof, and DatasetVerification), addresses the specific design requirements of a Trustless Notary as described in the Filecoin ideation article.
 
 ### 2.2.2 Dataset Consistency Verification Algorithm
+**Note:Algorithm prototype validation has been successfully passed.**
+
 See [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm) for details.
 
 ### 2.2.3 Dataset Consistency Proof and verification Toolset
+**Note:Algorithm prototype validation has been successfully passed.**
+
 The Dataset Consistency Proof Toolset is used to implement the consistency proof algorithm, including the generation of dataset proofs, source data sampling, and verification tools etc.
 See [Consistency Proof and verify Toolset Design](../algorithms/README.md#3-dataset-consistency-proof-and-verification-toolset) for details.
 

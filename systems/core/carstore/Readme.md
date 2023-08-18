@@ -187,4 +187,4 @@ interface ICarstore {
     function carsCount() external view returns (uint64);
 }
 ```
-[return to the system page](../../README.md)
+[return to the system page](../../README.md#231-core-layeryou-can-consider-it-as-the-infrastructure-layer)
