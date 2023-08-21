@@ -47,6 +47,7 @@ See [Consistency Proof and verify Toolset Design](../algorithms/README.md#3-data
 |module|status|
 |:---:|:---:|
 |[access](./core/access/Readme.md)|Draft/WIP|
+|[filecoin](./core/filecoin/Readme.md)|Draft/WIP|
 |[filplus](./core/filplus/Readme.md)|Draft/WIP|
 |[carstore](./core/carstore/Readme.md)|Draft/WIP|
 |[token](./core/token/Readme.md)|Draft/WIP|
