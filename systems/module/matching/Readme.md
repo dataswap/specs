@@ -117,6 +117,7 @@ stateDiagram
     note right of Paused
       @Auction Triggerer:DP
       @Tender Triggerer:SP
+      @Note: only can pause before bidding.
     end note
     note right of Cancelled 
       @Auction Triggerer:DP
