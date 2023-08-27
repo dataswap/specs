@@ -1,7 +1,10 @@
 # 2. Systems
 
-## 2.1 Contract architecture
+## 2.1 Architecture
+### 2.1.1 Contract Architecture
 ![](./img/contractArchitecture.png)
+### 2.1.2 Test Architecture
+![](./img/testArchitecture.png)
 
 ## 2.2 Trustless notary
 ### 2.2.1 Concepts 
