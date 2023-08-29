@@ -3,15 +3,15 @@
 ### 1 Concepts
 | Role | Acronym | Description |
 |:--:|:--:|:--|
-| Storage Provider | SP | (1) Store useful data to earn FIL rewards<br>(2) Store orders from Dataswap to earn ecosystem rewards |
-| Retrieve Provider | RP | (1) Provide retrieval services to earn FIL rewards<br>(2) Offer Dataswap retrieval nodes and services to earn ecosystem rewards |
-| Compute Provider | CP | (1) Offer big data analysis and mining services to earn FIL or ecosystem rewards<br>(2) Provide ecosystem-related computations, such as DP, Seal, and Proof calculations, to earn FIL or ecosystem rewards |
+| Storage Provider | SP | (1) Pre-pledge auction funds to bid for datacap storage qualification<br>(2) Store verified data to earn Filecoin network block rewards <br>(3) Store orders from Dataswap to receive ecosystem rewards|
+| Retrieve Provider | RP | (1) Provide retrieval services to earn rewards from retrieval clients<br>(2) Offer Dataswap retrieval nodes and services to receive ecosystem rewards |
+| Compute Provider | CP | (1) Provide big data analysis and mining services to obtain funding rewards<br>(2) Offer ecosystem-related computations, such as DP, Seal, and Proof calculations, to receive funding rewards |
 | Metadata Provider | MDP | (1) Provide globally useful dataset metadata, submit according to DataSwap standards to earn ecosystem builder rewards |
-| Data Provider | DP | (1) Download and prove successfully submitted metadata datasets, form data packages for trading on Dataswap to earn ecosystem builder rewards |
+| Data Provider | DP | (1) Download and successfully submit verified metadata datasets, form data packages, and engage in transactions on Dataswap to earn funding rewards |
 | Metadata Auditor | MDA | (1) Review dataset metadata validity to earn ecosystem builder rewards |
 | Data Auditor | DA | (1) Review dataset source data validity to earn ecosystem builder rewards |
-| Retrieve Client | / | (1) Spend FIL to access retrieval services |
-| Compute Client | / | (1) Spend FIL to access computation services |
+| Retrieve Client | / | (1) Spending funds to access retrieval services |
+| Compute Client | / | (1) Spending funds to acquire computational services |
 
 ### 2 Type and State Variabless
 you can refer to @openzeppelin/contracts/access
