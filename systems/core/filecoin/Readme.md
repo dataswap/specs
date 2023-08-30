@@ -1,4 +1,4 @@
-## Filplus
+## Filecoin
 
 ### 1 Concepts
 - please refer to [filecoin](https://filecoin.io/)
