@@ -5,43 +5,34 @@
 
 ![](img/trustlessnotory-roles.png)
 
-//TODO: description
-
 ### 2.1.2 Dataswap storage overall process
 
 ```mermaid
 sequenceDiagram
 Storage Client(SC)->>Dataswap: submit dataset info(metadata)
 Storage Client(SC)->>Dataswap: datacap collateral
+Storage Client(SC)->>Dataswap: DP fee(SC) 
 Dataset Provider(DP)->>Dataswap: submit dataset proof
 Dataset Auditor(DA)->>Dataswap: submit challenge dataset proof
 Dataset Provider(DP)->>Dataswap: publish matching
 Storage Provider(SP)->>Dataswap: bid and win
 Storage Provider(SP)->>Dataswap: datacap(small chunk) collateral
-Storage Provider(SP)->>Dataswap: DP fee
+Storage Provider(SP)->>Dataswap: DP fee(SP)
 Dataset Provider(DP)->>Storage Provider(SP): provide car data
 loop Storage in progress 
-Storage Provider(SP)->>Dataswap: submit filecoin deal ids
-Dataswap->>Dataswap: verify filecoin deal ids
+Storage Provider(SP)->>Dataswap: submit claimIds
+Dataswap->>Dataswap: verify claimIds
 Dataswap->>Dataset Provider(DP): DP fee
 end
 Dataswap->>Storage Provider(SP): datacap(small chunk) collateral
 Dataswap->>Storage Client(SC): Storage end:datacap collateral
 Governance Team(GT)->>Dataswap: governance
 
-
-
-
 %%{init:{'themeCSS':'g:nth-of-type(3) rect.actor { stroke:lightgreen;fill: lightgreen; }; g:nth-of-type(10) rect.actor { stroke:lightgreen;fill: lightgreen; }; '}}%%
- 
-
 ```
 ### 2.1.3 Dataswap storage diagram
 
 ![](img/TrustlessNotary.png)
-
-
-//TODO: description
 
 ### 2.1.4 Dataswap storage runtime sequence diagram
 
@@ -54,6 +45,7 @@ SC->>DatasetContract: Submit metadata and storage rules for the dataset
 DatasetContract->>FilplusContract: Verify storage rules
 FilplusContract-->>DatasetContract: response:Storage rules are compliant
 DatasetContract-->>SC: response:The metadata of dataset submission was successful
+SC->>SupervisoryContract: Submit DP fee(SC) 
 SC->>SupervisoryContract: Submit datacap collateral
 SupervisoryContract->>DatasetContract:Check the DataCap collateral base on the size of the dataset and replicas
 DatasetContract-->>SupervisoryContract: Datacap collateral is valid
@@ -84,9 +76,10 @@ FilplusContract-->>MatchingContract: SP storage is compliant
 end
 MatchingContract-->>CarstoreContract: Update the state of cars
 MatchingContract-->>SP: won
+SP->>SupervisoryContract: Submit DP fee(SP)
 DP-->>SP: off-chain:Data transmission
 loop Storage in progress
-SP->>StorageContract: Start storage/storage deals submissio
+SP->>StorageContract: Start storage/claimids submission
 StorageContract-->>StorageContract: Verify deals
 StorageContract->>CarstoreContract:  Update state of replica of chunk
 StorageContract->>SupervisoryContract: Expense Settlement
