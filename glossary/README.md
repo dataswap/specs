@@ -1,9 +1,21 @@
 ## glossary
 ### 1 system
 
+**SC**
+
+>Storage Client 
+
 **SP**
 
 >Storage Provider
+
+**DP**
+
+>Data Preparer
+
+**DA**
+
+>Data Auditor
 
 **RP**
 
@@ -13,21 +25,9 @@
 
 >Compute Provider
 
-**MDP**
+**GT**
 
->Dataset Metadata Provider
-
-**DP**
-
->Dataset Provider  
-
-**MDA**
-
->Dataset Metadata Auditor
-
-**DA**
-
->Dataset Auditor  
+>Governance Team
 
 ### 2 algorithms
 

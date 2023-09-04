@@ -12,17 +12,17 @@ sequenceDiagram
 Storage Client(SC)->>Dataswap: submit dataset info(metadata)
 Storage Client(SC)->>Dataswap: datacap collateral
 Storage Client(SC)->>Dataswap: DP fee(SC) 
-Dataset Provider(DP)->>Dataswap: submit dataset proof
-Dataset Auditor(DA)->>Dataswap: submit challenge dataset proof
-Dataset Provider(DP)->>Dataswap: publish matching
+Data Preparer(DP)->>Dataswap: submit dataset proof
+Data Auditor(DA)->>Dataswap: submit challenge dataset proof
+Data Preparer(DP)->>Dataswap: publish matching
 Storage Provider(SP)->>Dataswap: bid and win
 Storage Provider(SP)->>Dataswap: datacap(small chunk) collateral
 Storage Provider(SP)->>Dataswap: DP fee(SP)
-Dataset Provider(DP)->>Storage Provider(SP): provide car data
+Data Preparer(DP)->>Storage Provider(SP): provide car data
 loop Storage in progress 
 Storage Provider(SP)->>Dataswap: submit claimIds
 Dataswap->>Dataswap: verify claimIds
-Dataswap->>Dataset Provider(DP): DP fee
+Dataswap->>Data Preparer(DP): DP fee
 end
 Dataswap->>Storage Provider(SP): datacap(small chunk) collateral
 Dataswap->>Storage Client(SC): Storage end:datacap collateral
@@ -102,23 +102,31 @@ The Dataset module, specifically DatasetMetadata, DatasetProof, and DatasetVerif
 
 - **DatasetMetadata:**
 
-  - 1. Metadata Provider (MDP) submits dataset information such as title, industry category, name, description, data source, owner, creation time, creator, modification history, etc., to the business contract.
-  - 2. MDP initiates an audit request to the governance contract.
-  - 3. Metadata Auditor (MDA) submits the content audit result to the governance contract to verify if the source content matches the dataset information submitted by MDP.
-  - 4. After MDA's vote, the governance contract calls the business contract to approve or reject the DatasetMetadata.
+  - Storage Client (SC) submits dataset information such as title, industry category, name, description, data source, owner, creation time, creator, modification history, etc., to the dataset contract.
+  - Storage Client (SC) submits Datacap collateral to the Supervisory Contract based on the dataset's storage capacity to obtain access rights to the Datacap.
 
 - **DatasetProof:**
 
-  - The DatasetProof (DP) utilizes data proof tools (designed based on [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm)s) to generate dataset proofs, specifically the dataset proof Merkle tree.
-  - DP submits the dataset proof to the business contract.
+  - The Data Preparer (DP) utilizes data proof tools (designed based on [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm)s) to generate dataset proofs, specifically the dataset proof Merkle tree.
+  - DP submits the dataset proof to the dataset contract.
 
 - **DatasetVerification:**
 
-  - Dataset Auditor (DA) uses data proof verification tools (designed based on [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm)s) to generate dataset challenge proof verification information.
-  - DA submits the dataset challenge proof verification information to the business contract.
+  - Data Auditor (DA) uses data proof verification tools (designed based on [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm)s) to generate dataset challenge proof verification information.
+  - DA submits the dataset challenge proof verification information to the dataset contract.
   - After all DAs vote to the governance contract.the governance contract determines the final approval of the Dataset based on the audit results from all DAs.
 
-In summary, Dataswap storage, through its dataset module components (DatasetMetadata, DatasetProof, and DatasetVerification), addresses the specific design requirements of a Trustless Notary as described in the Filecoin ideation article.
+In summary, Dataswap storage, through its dataset module components (DatasetMetadata, DatasetProof and DatasetVerification), addresses the specific design requirements of a Trustless Notary as described in the Filecoin ideation article.
+
+The Matching module implements decentralized matchmaking functionality.
+  - Data Preparer (DP) participate in auctions within the matching contract to store their prepared datasets.
+  - Data Preparer (DP) need to ensure that their data is transferred (if the transaction is successful, they will send the data) to the winning SP. DP also needs to assist SP in completing the data onboarding process to receive their DP fee.
+  - SPs pre-stake funds in the supervisory contract to participate in dataset auctions and obtain validated dataset storage transactions.
+  - Storage Provider (SP) who bid during the matching period commit to completing data onboarding within a specific window after the auction ends. If they fail to do so, they forfeit their collateral.
+
+The storage module implements dataset onboarding management.
+  - When a Storage Provider (SP) wins the auction, the storage contract automatically approves Datacap for the SC without requiring any additional authorization.
+  - After the Storage Provider (SP) completes the storage, they submit the Claim ID to the storage contract to ensure the correct onboarding of data. If there are non-compliant data onboarding issues, the storage contract will halt Datacap approval.
 
 ### 2.1.6 Dataset Consistency Verification Algorithm
 **Note:Algorithm prototype validation has been successfully passed.**

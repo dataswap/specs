@@ -1,7 +1,7 @@
 # 1. Introduction
 ## 1.1 Features
 
-- Utilizing a data authentication mechanism (including data submit, verification, and auditing) to ensure the genuine value of platform data.
+- Proposing [Dataset Consistency Algorithms](../algorithms/README.md#2-dataset-consistency-algorithm), including dataset proof submission and validation, to implement a fine-grained management process for datacap issuance while simultaneously ensuring the accurate loading of datasets.
 
 - Leveraging blockchain technology for permanent storage (using Filecoin) and distribution of datasets, establishing a transparent and publicly accessible distributed data index.
 
