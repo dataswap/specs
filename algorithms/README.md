@@ -42,7 +42,7 @@ Based on the dataset consistency algorithm, it is possible to prove the consiste
 
 
 ### 2.2 Principles
-- The DP needs to submit the DatasetProof to the business contract, where the DatasetMerkleTree is stored on-chain, and the CarProofs are stored on the Filecoin network (to save on-chain resources).
+- The DP needs to submit the DatasetProof to the dataset contract, where the DatasetMerkleTree is stored on-chain, and the CarProofs are stored on the Filecoin network (to save on-chain resources).
 - The DA challenges specific DatasetLeafHashes (CarRootHashes) and CarLeafHashes through random challenges.
 - The DA downloads partial file data of the CarProofs corresponding to the challenged CarRootHashes and CarLeafHashes from the Filecoin network (meeting the proof requirements, typically in the MB-level).
 - The DA submits the challenged DatasetHash Merkle Proof and CarRootHash Merkle Proof to the blockchain as challenge proof information for verification.
