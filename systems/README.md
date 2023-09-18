@@ -5,7 +5,26 @@
 
 ![](img/trustlessnotory-roles.png)
 
-### 2.1.2 Dataswap storage overall process
+### 2.1.2 Handling Sybil Attacks
+
+In the above-mentioned system, how to prevent Sybil attacks by DAs (collusion between DP and DA) is a critical issue. In the absence of malicious behavior by DAs, dataset consistency algorithms can prevent collusion and other malicious activities among SC, DP, and SP.
+
+Here is the operational process through which DAs can prevent Sybil attacks:
+
+- DA's admission requires collateral, and anyone can become a DA by submitting a collateral. DA's collateral can only be released after the dataset audit is completed.
+- Only after becoming a DA can one earn DA fees and DA challenge fees.
+  - DA fees are the fees earned by DAs for correctly submitting proofs for datasets.
+  - DA challenge fees refer to fees earned by DAs when they successfully challenge other DAs' challenge dataset proofs(CDP), which are found to be fraudulent.
+- If a DA discovers that another DA has submitted a false challenge dataset proof, they can submit a dispute to the dispute resolution robot.
+- The dispute resolution robot is a voting cluster built by a trusted community organization to handle DA disputes. It is only activated when a dispute arises, and it completes the dispute resolution.
+- When a DA submits a dispute resolution, they are required to pay a dispute resolution fee to the dispute resolution robot.
+- When the dispute resolution results in a successful challenge, the collateral amount of the challenged DA is forfeited, and it is used to pay the fees for the challenging DA.
+- A DA that has been successfully challenged has their collateral amount forfeited and loses their DA role authorization.
+- When the dispute resolution outcome determines that the DA has engaged in malicious behavior, the CDP submitted by the DA becomes invalid.
+
+![](img/sybil-attacks-handling.png)
+
+### 2.1.3 Dataswap storage overall process
 
 ```mermaid
 sequenceDiagram
@@ -30,11 +49,11 @@ Governance Team(GT)->>Dataswap: governance
 
 %%{init:{'themeCSS':'g:nth-of-type(3) rect.actor { stroke:lightgreen;fill: lightgreen; }; g:nth-of-type(10) rect.actor { stroke:lightgreen;fill: lightgreen; }; '}}%%
 ```
-### 2.1.3 Dataswap storage diagram
+### 2.1.4 Dataswap storage diagram
 
 ![](img/TrustlessNotary.png)
 
-### 2.1.4 Dataswap storage runtime sequence diagram
+### 2.1.5 Dataswap storage runtime sequence diagram
 
 ```mermaid
 sequenceDiagram
@@ -93,7 +112,7 @@ SupervisoryContract->>SP: Release dataset chunk collateral
 SupervisoryContract->>SC: Storage end:Release datacap collateral
 ```
 
-### 2.1.5 Concepts 
+### 2.1.6 Concepts 
 **Dataswap storage (Service) fully satisfies the specific design requirements of "Trustless Notary Design Space" outlined in the [Filecoin ideation article](https://medium.com/filecoin-plus/ideation-trustless-notary-design-space-guidelines-bc21f6d9d5f2).**
 
 Dataswap storage provides a complete solution through dataset auditing, matching, automatic datacap allocation, and  storage.
@@ -128,12 +147,12 @@ The storage module implements dataset onboarding management.
   - When a Storage Provider (SP) wins the auction, the storage contract automatically approves Datacap for the SC without requiring any additional authorization.
   - After the Storage Provider (SP) completes the storage, they submit the Claim ID to the storage contract to ensure the correct onboarding of data. If there are non-compliant data onboarding issues, the storage contract will halt Datacap approval.
 
-### 2.1.6 Dataset Consistency Verification Algorithm
+### 2.1.7 Dataset Consistency Verification Algorithm
 **Note:Algorithm prototype validation has been successfully passed.**
 
 See [Dataset Consistency Algorithm](../algorithms/README.md#2-dataset-consistency-algorithm) for details.
 
-### 2.1.7 Dataset Consistency Proof and verification Toolset
+### 2.1.8 Dataset Consistency Proof and verification Toolset
 **Note:Algorithm prototype validation has been successfully passed.**
 
 The Dataset Consistency Proof Toolset is used to implement the consistency proof algorithm, including the generation of dataset proofs, source data sampling, and verification tools etc.
