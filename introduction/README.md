@@ -27,4 +27,8 @@ Layer2(dataswap storage) meets the requirements of [Ideation: Trustless Notary D
 ### 1.2.2 Data Lifecycle Diagram
 ![](./img/dataLifecycle.png)
 
+### 1.2.3 DataSwap Operational Simulation on the Filecoin Network
+
+[DataSwap Operational Simulation on the Filecoin Network](https://observablehq.com/d/eda624edd4751495)
+
 ## 1.3 Key Concepts
