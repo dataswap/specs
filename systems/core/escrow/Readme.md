@@ -2,11 +2,11 @@
 
 ## Terminology
 
-SC: Storage Client
-SP: Storage Provider
-DP: Data Preparer
-DA: Data Auditor
-AR: Arbitration Robot
+SC: Storage Client  
+SP: Storage Provider  
+DP: Data Preparer  
+DA: Data Auditor  
+AR: Arbitration Robot  
 
 ## Overview
 
