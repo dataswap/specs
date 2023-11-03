@@ -1,4 +1,4 @@
-#Dataswap economic model design
+# Dataswap economic model design
 
 ## Terminology
 
@@ -12,7 +12,7 @@ AR: Arbitration Robot
 
 Dataswap involves capital circulation business and does not involve capital circulation business
 
-![Transfer business diagram](trustlessnotory-roles.png)
+![Transfer business diagram](../../img/trustlessnotory-roles.png)
 
 > File a dispute and pay the dispute handling fee directly to the robot regardless of the outcome of the dispute
 
