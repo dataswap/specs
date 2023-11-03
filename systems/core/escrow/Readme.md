@@ -24,12 +24,12 @@ Purpose: Constrain SC to provide valid data.
 
 ```mermaid
 sequenceDiagram
-   SC ->> Collateral: deposit when submitDatasetReplicaRequirements
-   Collateral -->> SC: deposit response
-   Datasets ->> Collateral: depositof when submitDatasetReplicaRequirements,submitDatasetProof and approveDataset
-   Collateral -->> Datasets: depositof response
-   SC ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> SC: withdraw response
+   SC ->> Escrow: deposit when submitDatasetReplicaRequirements
+   Escrow -->> SC: deposit response
+   Datasets ->> Escrow: depositof when submitDatasetReplicaRequirements,submitDatasetProof and approveDataset
+   Escrow -->> Datasets: depositof response
+   SC ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> SC: withdraw response
 ```
 
 Staking algorithm: ((dataset size)Bytes / 1024 / 1024 /1024 /1024)TiB *(replica count)*unit price per T  
@@ -44,14 +44,14 @@ Purpose: Constrain DP to submit correct dataset proof, and encourage DA to arbit
 
 ```mermaid
 sequenceDiagram
-   DP ->> Collateral: deposit before dataset proof submit
-   Collateral -->> DP: deposit response
-   Dataset ->> Collateral: depositof when dataset proof submit
-   Collateral -->> Dataset: depositof response
-   DP ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> DP: withdraw response
-   DA ->> Collateral: payment when paymentAllowed
-   Collateral -->> DA: payment response
+   DP ->> Escrow: deposit before dataset proof submit
+   Escrow -->> DP: deposit response
+   Dataset ->> Escrow: depositof when dataset proof submit
+   Escrow -->> Dataset: depositof response
+   DP ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> DP: withdraw response
+   DA ->> Escrow: payment when paymentAllowed
+   Escrow -->> DA: payment response
 ```
 
 Staking algorithm: ((datacap size)Bytes / 1024 / 1024 /1024 /1024)TiB *Unit price per T  
@@ -69,14 +69,14 @@ Purpose: Constrain DA to submit the correct challenge dataset proof. Incentivize
 
 ```mermaid
 sequenceDiagram
-   DA(submitter) ->> Collateral: deposit before challenge dataset proof submit
-   Collateral -->> DA(submitter): deposit response
-   Dataset ->> Collateral: depositof when challenge dataset proof submit
-   Collateral -->> Dataset: depositof response
-   DA(submitter) ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> DA(submitter): withdraw response
-   DA(dispute) ->> Collateral: payment when paymentAllowed
-   Collateral -->> DA(dispute): payment response
+   DA(submitter) ->> Escrow: deposit before challenge dataset proof submit
+   Escrow -->> DA(submitter): deposit response
+   Dataset ->> Escrow: depositof when challenge dataset proof submit
+   Escrow -->> Dataset: depositof response
+   DA(submitter) ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> DA(submitter): withdraw response
+   DA(dispute) ->> Escrow: payment when paymentAllowed
+   Escrow -->> DA(dispute): payment response
 ```
 
 Staking algorithm: ((datacap size)Bytes / 1024 / 1024 /1024 /1024)TiB *Unit price per T  
@@ -94,12 +94,12 @@ Purpose: Constrain SP to store data correctly.
 
 ```mermaid
 sequenceDiagram
-   SP ->> Collateral: deposit before malloc chunk datacap
-   Collateral -->> SP: deposit response
-   Datacap ->> Collateral: depositof when malloc chunk datacap
-   Collateral -->> Datacap: depositof response
-   SP ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> SP: withdraw response
+   SP ->> Escrow: deposit before malloc chunk datacap
+   Escrow -->> SP: deposit response
+   Datacap ->> Escrow: depositof when malloc chunk datacap
+   Escrow -->> Datacap: depositof response
+   SP ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> SP: withdraw response
 ```
 
 Staking algorithm: ((datacap size)Bytes / 1024 / 1024 /1024 /1024)TiB *Unit price per T  
@@ -117,12 +117,12 @@ sequenceDiagram
    SP ->> Matching: deposit when bidding
    Matching -->> SP: deposit response
    Matching ->> SP: refundOthers when chooseMatchingWinner
-   Matching ->> Collateral: deposit after refundOthers
-   Collateral -->> Matching: deposit response
-   DP ->> Collateral: payment when paymentAllowed
-   Collateral -->> DP: payment response
-   SP ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> SP: withdraw response
+   Matching ->> Escrow: deposit after refundOthers
+   Escrow -->> Matching: deposit response
+   DP ->> Escrow: payment when paymentAllowed
+   Escrow -->> DP: payment response
+   SP ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> SP: withdraw response
 ```
 
 Cost algorithm: ((datacap size)Bytes / 1024 / 1024 /1024 /1024)TiB *Unit price per T  
@@ -137,17 +137,17 @@ Purpose: To motivate DP calculations to prepare data.
 
 ```mermaid
 sequenceDiagram
-   SC ->> Collateral: deposit when submitDatasetReplicaRequirements
-   Collateral -->> SC: deposit response
-   SP ->> Collateral: deposit of when bidding
-   Collateral -->> SP: depositof response
-   Matching ->> Collateral: depositToSubAccount when chooseMatchingWinner
-   Collateral -->> Matching: depositToSubAccount response
-   Matching ->> Collateral: withdrawFromSubAccount when matching expire and withdrawAllowedFromSubAccount
-   DP ->> Collateral: paymentFromSubAccount when paymentAllowedFromSubAccount
-   Collateral -->> DP: paymentFromSubAccount response
-   SC ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> SC: withdraw response
+   SC ->> Escrow: deposit when submitDatasetReplicaRequirements
+   Escrow -->> SC: deposit response
+   SP ->> Escrow: deposit of when bidding
+   Escrow -->> SP: depositof response
+   Matching ->> Escrow: depositToSubAccount when chooseMatchingWinner
+   Escrow -->> Matching: depositToSubAccount response
+   Matching ->> Escrow: withdrawFromSubAccount when matching expire and withdrawAllowedFromSubAccount
+   DP ->> Escrow: paymentFromSubAccount when paymentAllowedFromSubAccount
+   Escrow -->> DP: paymentFromSubAccount response
+   SC ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> SC: withdraw response
 ```
 
 Fee algorithm: any price  
@@ -164,14 +164,14 @@ Purpose: To motivate DA to do challenge dataset proof calculations.
 
 ```mermaid
 sequenceDiagram
-   SC ->> Collateral: deposit when submitDatasetReplicaRequirements
-   Collateral -->> SC: deposit response
-   Datasets ->> Collateral: depositof when submitDatasetReplicaRequirements,submitDatasetProof and approveDataset
-   Collateral -->> Datasets: depositof response
-   DA ->> Collateral: payment when paymentAllowed
-   Collateral -->> DA: payment response
-   SC ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> SC: withdraw response
+   SC ->> Escrow: deposit when submitDatasetReplicaRequirements
+   Escrow -->> SC: deposit response
+   Datasets ->> Escrow: depositof when submitDatasetReplicaRequirements,submitDatasetProof and approveDataset
+   Escrow -->> Datasets: depositof response
+   DA ->> Escrow: payment when paymentAllowed
+   Escrow -->> DA: payment response
+   SC ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> SC: withdraw response
 ```
 
 Cost algorithm: ((datacap size)Bytes / 1024 / 1024 /1024 /1024)TiB *Unit price per T  
@@ -187,14 +187,14 @@ Purpose: To motivate arbitration robots to do arbitration calculations.
 
 ```mermaid
 sequenceDiagram
-   DA ->> Collateral: deposit when submitDisputeProof and submitDisputeChallengeProof
-   Collateral -->> DA: deposit response
-   Arbitration Robot ->> Collateral: depositof before disputeProcess
-   Collateral -->> Arbitration Robot: depositof response
-   Arbitration Robot ->> Collateral: payment when paymentAllowed
-   Collateral -->> Arbitration Robot: payment response
-   DA ->> Collateral: withdraw when withdrawalAllowed
-   Collateral -->> DA: withdraw response
+   DA ->> Escrow: deposit when submitDisputeProof and submitDisputeChallengeProof
+   Escrow -->> DA: deposit response
+   Arbitration Robot ->> Escrow: depositof before disputeProcess
+   Escrow -->> Arbitration Robot: depositof response
+   Arbitration Robot ->> Escrow: payment when paymentAllowed
+   Escrow -->> Arbitration Robot: payment response
+   DA ->> Escrow: withdraw when withdrawalAllowed
+   Escrow -->> DA: withdraw response
 ```
 
 Fee Algorithm: Fixed Fee  
